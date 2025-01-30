@@ -4,14 +4,14 @@
 
 |   Info      |        Description     |
 | ----------- | ---------------------- |
-| TeamID      |        Team-000        |
-| TeamName    |         sample         |
-| Captain     |       Abdu Alawini     |
-| Captain     |  alawini@illinois.edu  |
-| Member1     |        Kevin Pei       |
-| Member1     |   kevin2@illinois.edu  |
-| Member2     |     Ti-Chung Cheng     |
-| Member2     |  tichung3@illinois.edu |
+| TeamID      |        Team-084        |
+| TeamName    |           BEAT         |
+| Captain     |                        |
+| Captain     |                        |
+| Member1     |                        |
+| Member1     |                        |
+| Member2     |                        |
+| Member2     |                        |
 | Member3     |                        |
 | Member3     |                        |
 
