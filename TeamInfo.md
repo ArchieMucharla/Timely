@@ -10,8 +10,8 @@
 | Captain     |                        |
 | Member1     |          nc47          |
 | Member1     |     Nai-Syuan Chang    |
-| Member2     |                        |
-| Member2     |                        |
+| Member2     |         Archana8               |
+| Member2     |         Archie Mucharla               |
 | Member3     |                        |
 | Member3     |                        |
 
