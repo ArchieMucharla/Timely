@@ -12,8 +12,8 @@
 | Member1     |     Nai-Syuan Chang    |
 | Member2     |         Archana8               |
 | Member2     |         Archie Mucharla               |
-| Member3     |                        |
-| Member3     |                        |
+| Member3     |       mmagro2                 |
+| Member3     |       Beau Magro                 |
 
 ## Project Information
 
