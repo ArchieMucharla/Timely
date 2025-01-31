@@ -6,14 +6,14 @@
 | ----------- | ---------------------- |
 | TeamID      |        Team-084        |
 | TeamName    |           BEAT         |
-| Captain     |                        |
-| Captain     |                        |
+| Captain     |          mmagro2       |
+| Captain     |          Beau Magro    |
 | Member1     |          nc47          |
 | Member1     |     Nai-Syuan Chang    |
-| Member2     |         Archana8               |
-| Member2     |         Archie Mucharla               |
-| Member3     |       mmagro2                 |
-| Member3     |       Beau Magro                 |
+| Member2     |         Archana8       |
+| Member2     |         Archie Mucharla |
+| Member3     |       taisiak2          |
+| Member3     |       Taisia Kalinina   |
 
 ## Project Information
 
