@@ -1,4 +1,4 @@
-# team000-sample
+# team084-BEAT
 
 ## Basic Information
 
@@ -8,8 +8,8 @@
 | TeamName    |           BEAT         |
 | Captain     |                        |
 | Captain     |                        |
-| Member1     |                        |
-| Member1     |                        |
+| Member1     |          nc47          |
+| Member1     |     Nai-Syuan Chang    |
 | Member2     |                        |
 | Member2     |                        |
 | Member3     |                        |
