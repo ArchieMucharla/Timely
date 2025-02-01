@@ -6,14 +6,14 @@
 | ----------- | ---------------------- |
 | TeamID      |        Team-084        |
 | TeamName    |           BEAT         |
-| Captain     |          mmagro2       |
 | Captain     |          Beau Magro    |
-| Member1     |          nc47          |
-| Member1     |     Nai-Syuan Chang    |
-| Member2     |         Archana8       |
-| Member2     |         Archie Mucharla |
-| Member3     |       taisiak2          |
-| Member3     |       Taisia Kalinina   |
+| Captain     |  mmagro2@illinois.edu  |
+| Member1     | Nai-Syuan Chang        |
+| Member1     |      nc47@illinois.edu |
+| Member2     |    Archie Mucharla     |
+| Member2     |  Archana8@illinois.edu |
+| Member3     |   Taisia Kalinina      |
+| Member3     | taisiak2@illinois.edu  |
 
 ## Project Information
 
