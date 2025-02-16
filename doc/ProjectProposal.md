@@ -29,6 +29,6 @@ Delete: Users can remove personal events.
 Search: Users can filter timelines by keyword, category, and time range.
 
 ## UI mockup:
-![Timeline Demo](UI_MockUp.gif)
+![Timeline Demo](doc/UI_MockUp.gif)
 
 ## Project work distribution:
