@@ -24,7 +24,7 @@ Key Features
 
 5. Snapshot & Export: Users can capture and share timeline screenshots.
    
-## Components:
+## Creative Components:
 
 Users can create personal events on the timeline, connect with friends, and view their combined life events on a single timeline. This allows users to track shared experiences over time. Each user can choose to make their timeline private, shared with friends, or public. 
 
@@ -38,7 +38,14 @@ Additionally, users can add their events, whether it is a topic related to their
 
 ## Data Sources:
 
-For research paper events: Semantic Scholar API  and PubMed API: Entrez Programming Utilities (E-utilities). 
+We currently categorized our events into two types, general historical events and scientific research events. These APIs will be used to get the authors, title, DOI, and date of publication of research articles.
+
+### For research paper events: ###
+1. Semantic Scholar Datasets API and/or
+2. PubMed API: Entrez Programming Utilities (E-utilities). 
+### For (general) historical events: ###
+1. GDELT
+2. BDpedia.
 
 ## Functionality Description:
 
