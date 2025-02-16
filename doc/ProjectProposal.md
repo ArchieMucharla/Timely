@@ -29,5 +29,6 @@ Delete: Users can remove personal events.
 Search: Users can filter timelines by keyword, category, and time range.
 
 ## UI mockup:
+![Timeline Demo]([https://github.com/cs411-alawini/sp25-cs411-team084-BEAT/edit/main/doc/ProjectProposal.md](https://github.com/cs411-alawini/sp25-cs411-team084-BEAT/blob/main/doc/UI_MockUp))
 
 ## Project work distribution:
