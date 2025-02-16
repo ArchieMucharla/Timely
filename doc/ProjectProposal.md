@@ -21,15 +21,20 @@ Additionally, users can add their events, whether it is a topic related to their
 
 ## Data Sources:
 
+For research paper events: Semantic Scholar API  and PubMed API: Entrez Programming Utilities (E-utilities). 
+
 ## Functionality Description:
 
-1. Create: Users can add new personal events.
+1. Create: Users can add new personal events. Each event includes a name, date, description, categories, and image.
 2. Read: Users can view and search events based on category or time period.
 3. Update: Users can edit or update event details.
 4. Delete: Users can remove personal events.
-5. Search: Users can filter timelines by keyword, category, and time range.
+5. Search: Users can filter timelines more advancedly by keyword, category, and time range.
 
 ## UI mockup:
+
+The UI mockup showcased the main timeline, with two different categories of events. And the interaction for filtering categories, searching by keywords, searching and adding friends, and adding new events.
+
 ![Timeline Demo](UI_MockUp.gif)
 
 ## Project work distribution:
