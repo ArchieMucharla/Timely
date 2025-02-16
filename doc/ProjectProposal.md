@@ -8,11 +8,11 @@ This tool serves as a research or educational aid and can provide knowledge abou
 
 ## Description:
 
-This application provides users with a powerful tool to explore and visualize historical and academic events based on specific topics. The core problem it addresses is the lack of a dynamic, user-driven platform for viewing topic-based event timelines.
+This application provides users with a powerful tool to explore and visualize historical and academic events based on specific topics. The core problem it addresses is the lack of a dynamic platform for viewing topic-based event timelines.
 
-By allowing users to generate their own customized timelines and refine searches, this application serves students, researchers, and history enthusiasts who seek to understand the evolution of various fields. The ability to add personal events also makes it a versatile tool for storytelling and tracking personal milestones.
+By allowing users to create their own customized timelines and refine searches, this application serves students, researchers, and history enthusiasts who seek to understand the relation of various fields. The ability to add personal events also makes it a tool for tracking personal milestones and exploring friends' life stories.
 
-Key Features
+### Key Features ###
 
 1. View Events: Users can explore categorized events (e.g., historical, academic, personal) and toggle them on/off. They can filter events based on timeframes and expand event details.
 
