@@ -1,17 +1,34 @@
 # Project Proposal-(Project Title)
 
-## Description:
+## Project Overview:
 
 The goal of this project is to develop a web application that enables users to explore historical and academic events dynamically through an interactive timeline. Users can search for any topic of their interest such as “mathematics” or “computer science,” and generate their own customized timeline to showcase the major events of the field. From there, users can additionally refine their query by searching and filtering accordingly. Additionally, the platform allows users to create and personalize their own timelines based on their topics of interest or their personal lives. 
 
 This tool serves as a research or educational aid and can provide knowledge about how specific fields have evolved over time and even how different topics intersect. The system will aggregate various data sources for a well-rounded timeline
 
+## Description:
 
+This application provides users with a powerful tool to explore and visualize historical and academic events based on specific topics. The core problem it addresses is the lack of a dynamic, user-driven platform for viewing topic-based event timelines.
+
+By allowing users to generate their own customized timelines and refine searches, this application serves students, researchers, and history enthusiasts who seek to understand the evolution of various fields. The ability to add personal events also makes it a versatile tool for storytelling and tracking personal milestones.
+
+Key Features
+
+1. View Events: Users can explore categorized events (e.g., historical, academic, personal) and toggle them on/off. They can filter events based on timeframes and expand event details.
+
+2. Search & Filter: Users can search for events using keywords and refine timelines by event categories or timeframes.
+
+3. Create Personal Events: Logged-in users can add, edit, and delete personal events with descriptions and images.
+
+4. Shared Timelines: Users can create and share timelines with friends, combining life events into a single view.
+
+5. Snapshot & Export: Users can capture and share timeline screenshots.
+   
 ## Components:
-1. View events: Events are categorized based on topics (e.g., historical, academic, personal). Users can toggle event categories on or off. Users also can expand and view the details of the events by clicking on them.
-2. Search & Filter: Users can search for events by keywords and filter timelines based on event categories or timeframes.
-3. Create Personal Events: Users can log in and create their events, with tags of different categories. Users can add descriptions and images to their events.
-4. An additional idea – Shared Timelines: Users can create personal events on the timeline, connect with friends, and view their combined life events on a single timeline. Users can choose to share the timeline externally.
+
+Users can create personal events on the timeline, connect with friends, and view their combined life events on a single timeline. This allows users to track shared experiences over time. Each user can choose to make their timeline private, shared with friends, or public. 
+
+Users will also have the option to share their timeline externally to social media, filtering the categories, time period of the timeline that they desired.
 
 ## Usefulness:
 
@@ -25,11 +42,12 @@ For research paper events: Semantic Scholar API  and PubMed API: Entrez Programm
 
 ## Functionality Description:
 
-1. Create: Users can add new personal events. Each event includes a name, date, description, categories, and image.
-2. Read: Users can view and search events based on category or time period.
-3. Update: Users can edit or update event details.
-4. Delete: Users can remove personal events.
-5. Search: Users can filter timelines more advancedly by keyword, category, and time range.
+1. Create: Users can create a new account.
+2. Create: Users can add new personal events, which include a name, date, description, categories, and image.
+3. Read: Users can view and search events based on category or time period.
+4. Update: Users can edit or update event details.
+5. Delete: Users can remove personal events.
+6. Search: Users can filter timelines more advancedly by keyword, category, and time range.
 
 ## UI mockup:
 
@@ -38,3 +56,22 @@ The UI mockup showcased the main timeline, with two different categories of even
 ![Timeline Demo](UI_MockUp.gif)
 
 ## Project work distribution:
+### **Website (Front-end)**
+- **Rendering a dynamic timeline visualization**
+- **General UI Layout of home page**
+- **Search and filter functionalities**
+  - Time range selection, filtering by category, key-word based searching
+- **Login page**
+
+### **Database (Back-end)**
+- **Retrieve data from external sources**
+  - **Taisia**: Retrieve data for scholarly article timeline events.
+  - **Beau**: Retrieve data for historical events.
+- **Designing database tables and relationships**
+- **Sort/process data**
+- **CRUD operations**
+- **Making the timelines**
+- **Integrating user authentication**
+### **Connect the front-end and back-end**
+### **Testing**
+
