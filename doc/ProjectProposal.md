@@ -34,8 +34,7 @@ Users will also have the option to share their timeline externally to social med
 
 This application will serve users such as researchers, students, and history enthusiasts by offering an intuitive way to explore the evolution of topics overtime. Unlike static historical databases, our application is more dynamic as users can generate topic based timelines on demand. Similar tools may exist, but this offers an aggregation of various sources and is customizable to refine searches to fit the exact user need.  
 
-Additionally, users can add their events, whether it is a topic related to their research or their personal endeavors. Users can also connect with friends on *insert app name* and view everyone's life at a glance.
-
+Additionally, users can add their events, whether it is a topic related to their research or their personal endeavors. For example, users can include personal events alongside historical ones or students and professionals could use this feature to track and organize their projects, research, and deadlines. Users can also connect with friends on *insert app name* and view everyone's life at a glance.
 ## Data Sources:
 
 We currently categorized our events into two types, general historical events and scientific research events. These APIs will be used to get the authors, title, DOI, and date of publication of research articles.
