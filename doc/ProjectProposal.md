@@ -64,7 +64,7 @@ The UI mockup showcased the main timeline, with two different categories of even
 ## Project work distribution:
 ### **Website (Front-end)**
 - **Rendering a dynamic timeline visualization**
-- **General UI Layout of home page**
+- **Emerald (Nai-Syuan):** General UI Layout of home page
 - **Search and filter functionalities**
   - Time range selection, filtering by category, key-word based searching
 - **Login page**
@@ -78,6 +78,6 @@ The UI mockup showcased the main timeline, with two different categories of even
 - **CRUD operations**
 - **Making the timelines**
 - **Integrating user authentication**
-### **Connect the front-end and back-end**
+### **Emerald (Nai-Syuan):** ###Connect the front-end and back-end
 ### **Testing**
 
