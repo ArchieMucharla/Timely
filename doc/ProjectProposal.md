@@ -64,9 +64,11 @@ The UI mockup showcased the main timeline, with two different categories of even
 ## Project work distribution:
 ### **Website (Front-end)**
 - **Rendering a dynamic timeline visualization**
-   - **Taisia** 
+   - **Taisia**
+   - **Archie**
 - **General UI Layout of home page**
    - **Emerald (Nai-Syuan)**
+   - **Archie**
 - **Search and filter functionalities**
   - **Taisia**: Time range selection, filtering by category, key-word based searching
 - **Login page**
@@ -79,7 +81,8 @@ The UI mockup showcased the main timeline, with two different categories of even
    - **Taisia** 
 - **Sort/process data**
 - **CRUD operations**
-   - **Taisia**
+   - **Archie**
+   -  **Taisia**
 - **Making the timelines**
    - **Beau**
 - **Integrating user authentication**
