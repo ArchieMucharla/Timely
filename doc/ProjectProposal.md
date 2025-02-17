@@ -14,15 +14,15 @@ By allowing users to create their own customized timelines and refine searches, 
 
 ### Key Features ###
 
-1. View Events: Users can explore categorized events (e.g., historical, academic, personal) and toggle them on/off. They can filter events based on timeframes and expand event details.
+1. **View Events**: Users can explore categorized events (e.g., historical, academic, personal) and toggle them on/off. They can filter events based on timeframes and expand event details.
 
-2. Search & Filter: Users can search for events using keywords and refine timelines by event categories or timeframes.
+2. **Search & Filter**: Users can search for events using keywords and refine timelines by event categories or timeframes.
 
-3. Create Personal Events: Logged-in users can add, edit, and delete personal events with descriptions and images.
+3. **Create Personal Events**: Logged-in users can add, edit, and delete personal events with descriptions and images.
 
-4. Shared Timelines: Users can create and share timelines with friends, combining life events into a single view.
+4. **Shared Timelines**: Users can create and share timelines with friends, combining life events into a single view.
 
-5. Snapshot & Export: Users can capture and share timeline screenshots.
+5. **Snapshot & Export**: Users can capture and share timeline screenshots.
    
 ## Creative Components:
 
