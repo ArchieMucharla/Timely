@@ -1,4 +1,4 @@
-# Project Proposal-(Project Title)
+# Project Proposal-(Timey & Liney)
 
 ## Project Overview:
 
@@ -64,10 +64,11 @@ The UI mockup showcased the main timeline, with two different categories of even
 ## Project work distribution:
 ### **Website (Front-end)**
 - **Rendering a dynamic timeline visualization**
+   - **Taisia** 
 - **General UI Layout of home page**
    - **Emerald (Nai-Syuan)**
 - **Search and filter functionalities**
-  - Time range selection, filtering by category, key-word based searching
+  - **Taisia**: Time range selection, filtering by category, key-word based searching
 - **Login page**
 
 ### **Database (Back-end)**
@@ -75,11 +76,16 @@ The UI mockup showcased the main timeline, with two different categories of even
   - **Taisia**: Retrieve data for scholarly article timeline events.
   - **Beau**: Retrieve data for historical events.
 - **Designing database tables and relationships**
+   - **Taisia** 
 - **Sort/process data**
 - **CRUD operations**
+   - **Taisia**
 - **Making the timelines**
+   - **Beau**
 - **Integrating user authentication**
+   - **Beau** 
 ### Connect the front-end and back-end ###
 - **Emerald (Nai-Syuan)**
 ### **Testing** ###
+   - **Everyone** 
 
