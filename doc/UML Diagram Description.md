@@ -1,4 +1,4 @@
-###Users (Users)
+### Users (Users) ###
 This table stores information about the users who are interacting with the database. It allows users to register and store their credentials (encrypted passwords)
 **Attributes:**
   -  user_id (PK, INT, NOT NULL) → Unique identifier for each user.
@@ -11,7 +11,7 @@ This table stores information about the users who are interacting with the datab
   -  The table is in BCNF.
   -  FD: user_id -> username, password
   -  There’s only one FD, and its LHS user_id is the superkey.
-###Events (Events)
+### Events (Events) ###
 This table stores the historical event data. Each row represents an individual event with relevant details.
 **Attributes:**
   -  event_id (PK, INT, NOT NULL) → Unique identifier for each event.
@@ -36,7 +36,7 @@ This table stores the preferences for each user about the categories of events t
 **Normalization:**
   -  The table is in BCNF:
   -  user_id, category_id is the superkey and a composite key.
-###Event Categories (EventCategory)
+### Event Categories (EventCategory) ###
 This table represents the many-to-many relationship between events and categories. Since an event can belong to multiple categories, and each category can contain multiple events, this table is used to map events to one or more categories
 **Attributes:**
   -  event_id (PK, FK, INT, NOT NULL) → References Events.
@@ -46,7 +46,7 @@ This table represents the many-to-many relationship between events and categorie
 **Normalization:**
   -  The table is in BCNF:
   -  event_id, category_id is the superkey and a composite key.
-###Categories (Categories)
+### Categories (Categories) ###
 This table organizes events into broader categories. Categories help group events by type and can be used as filters when users want to view events from specific types.
 **Attributes:**
   -  category_id (PK, INT, NOT NULL) → Unique identifier for each category.
@@ -58,7 +58,7 @@ This table organizes events into broader categories. Categories help group event
   -  The table is in BCNF:
   -  FD: category_id -> category_name, cat_description
   -  There’s only one FD, and its LHS category_id is the superkey.
-###Category Hierarchy (categoryHierarchy)
+### Category Hierarchy (categoryHierarchy) ###
 This table represents many-to-many relationships within categories. It allows for categories to contain multiple sub-categories.
 **Attributes:**
   -  category_id (PK, FK, INT, NOT NULL) → References Categories, representing the parent category.
@@ -69,7 +69,7 @@ This table represents many-to-many relationships within categories. It allows fo
   -  The table is in BCNF:
   -  category_id, category_descendent is the superkey and a composite key.
 
-###Logical Database Schema:
+## Logical Database Schema: ##
 **Users Table:** 
 Users(user_id:int[PK],
 username:VARCHAR(20) NOT NULL,
