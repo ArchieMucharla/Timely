@@ -1,6 +1,6 @@
 ### Users (Users) ###
-This table stores information about the users who are interacting with the database. It allows users to register and store their credentials (encrypted passwords)
-**Attributes:**
+This table stores information about the users who are interacting with the database. It allows users to register and store their credentials (encrypted passwords). 
+#### **Attributes:**
   -  user_id (PK, INT, NOT NULL) → Unique identifier for each user.
   -  username (VARCHAR(20), NOT NULL) → User’s chosen name.
   -  password (VARCHAR(20), NOT NULL) → User’s password.
@@ -26,7 +26,7 @@ This table stores the historical event data. Each row represents an individual e
   -  The table is in BCNF:
   -  FD: event_id -> created_by, event_name, event_date, event_description
   -  There’s only one FD, and its LHS event_id is the superkey.
-###User Preferences for Categories (UserCategoryPreferences)
+### User Preferences for Categories (UserCategoryPreferences) ###
 This table stores the preferences for each user about the categories of events they are interested in. It provides a way to customize the timeline by allowing users to select and save their preferred event categories.
 #### **Attributes:**
   -  user_id (PK, FK, INT, NOT NULL) → References Users, representing the user.
