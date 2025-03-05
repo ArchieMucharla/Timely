@@ -36,16 +36,6 @@ This table stores the preferences for each user about the categories of events t
 #### **Normalization:**
   -  The table is in BCNF:
   -  user_id, category_id is the superkey and a composite key.
-### Event Categories (EventCategory) ###
-This table represents the many-to-many relationship between events and categories. Since an event can belong to multiple categories, and each category can contain multiple events, this table is used to map events to one or more categories
-#### **Attributes:**
-  -  event_id (PK, FK, INT, NOT NULL) → References Events.
-  -  category_id (PK, FK, INT, NOT NULL) → References Categories.
-#### **Relationships:**
-  -  Many-to-Many between Events and Categories → Each event can belong to multiple categories.
-#### **Normalization:**
-  -  The table is in BCNF:
-  -  event_id, category_id is the superkey and a composite key.
 ### Categories (Categories) ###
 This table organizes events into broader categories. Categories help group events by type and can be used as filters when users want to view events from specific types.
 #### **Attributes:**
@@ -58,22 +48,44 @@ This table organizes events into broader categories. Categories help group event
   -  The table is in BCNF:
   -  FD: category_id -> category_name, cat_description
   -  There’s only one FD, and its LHS category_id is the superkey.
+### Sources (Sources) ###
+This table organizes the sources for each event. 
+#### **Attributes:**
+  - source_id (PK, INT, NOT NULL) → Unique identifier for each source.
+  - source_name(VARCHAR(20)) → Name of the source.
+  - author(VARCHAR(20)) → Author of the source.
+  - year(INT) → Year of the source.
+#### **Relationships:**
+  - One-to-Many with Events → one source may be associated with multiple events, but each event should have pulled from just one source.
+#### **Normalization:**
+  - The table is in BCNF:
+  - FD: source_id → source_name, author, year
 ### Category Hierarchy (categoryHierarchy) ###
 This table represents many-to-many relationships within categories. It allows for categories to contain multiple sub-categories.
 #### **Attributes:**
-  -  category_id (PK, FK, INT, NOT NULL) → References Categories, representing the parent category.
+  -  parent_category_id (PK, FK, INT, NOT NULL) → References Categories, representing the parent category.
   -  category_descendent (PK, FK, INT, NOT NULL) → References Categories, representing a sub-category.
 #### **Relationships:**
   -  Many-to-Many within Categories → A category can have multiple subcategories.
 #### **Normalization:**
   -  The table is in BCNF:
-  -  category_id, category_descendent is the superkey and a composite key.
+  -  parent_category_id, category_descendent is the superkey and a composite key.
+### Extra Relationships ###
+These are the additional many-to-many relationships implemented in the database.
+#### **UserCategoryPreferences:**
+  - Defines a many-to-many relationship between Users and Categories, allowing users to specify which categories they are interested in
+  - A user can select multiple categories
+  - A category can be selected by multiple users
+#### **EventCategories:**
+  - Defines a many-to-many relationship between Events and Categories, allowing events to belong to multiple categories
+  - An event can belong to multiple categories
+  - A category can contain multiple events
 
 ## Logical Database Schema: ##
 **Users Table:** 
 Users(user_id:int[PK],
 username:VARCHAR(20) NOT NULL,
-password: VARCHAR(20)] NOT NULL)
+password: VARCHAR(20) NOT NULL)
 
 **Events Table:**
 Events(event_id: INT [PK],
@@ -82,19 +94,17 @@ Events(event_id: INT [PK],
 	event_date: DATE NOT NULL,
 	event_description: STRING NOT NULL)
 
+**Sources Table:**
+Sources(source_id: INT [PK],
+  source_name: VARCHAR(20),
+  author: VARCHAR(20),
+  year: INT)
+
 **Categories Table:**
 Categories(category_id: INT [PK],
 	category_name: VARCHAR(20) NOT NULL,
 	cat_description: STRING)
 
-**User Preferences for Categories Table:**
-userCategoryPreferences(user_id: INT [PK, FK to Users.user_id],
-	category_id: INT [PK, FK to Categories.category_id]
-
-**Event Categories Table:**
-eventCategory(event_id: INT [PK, FK to Events.event_id]
-category_id: INT [PK, FK to Categories.category_id])
-
 **Category Hierarchy:**
-categoryHierarchy(category_id: INT [PK, FK to Categories.category_id],
+categoryHierarchy(parent_category_id: INT [PK, FK to Categories.category_id],
 category_descendent: INT [PK, FK to Categories.category_id])
