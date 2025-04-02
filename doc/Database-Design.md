@@ -55,7 +55,7 @@ CREATE TABLE EventCategory (
 
 # Queries and Indexing
 ## Queries
-* Query 1:  Find the most popular event category based on event count, only returns categories with higher than average distinct user contributions
+#### Query 1:  Find the most popular event category based on event count, only returns categories with higher than average distinct user contributions
 ```mysql
 SELECT ranked.category_name, ranked.event_count
 FROM (
@@ -83,7 +83,7 @@ LIMIT 15;
 ```
 ![Table Row Counts](https://github.com/cs411-alawini/sp25-cs411-team084-BEAT/blob/main/doc/Pictures/Query_1.png)
 
-* Query 2: Finds the top events that are interesting to the most users based on their category preferences
+#### Query 2: Finds the top events that are interesting to the most users based on their category preferences
 ```mysql
 SELECT
    e.event_name,
@@ -101,7 +101,7 @@ LIMIT 15;
 ```
 ![Table Row Counts](https://github.com/cs411-alawini/sp25-cs411-team084-BEAT/blob/main/doc/Pictures/Query_2.png)
 
-* Query 3: Users who has contributed, but none of the contribution are in the top category, i.e. user who contributed to less popular categories
+#### Query 3: Users who has contributed, but none of the contribution are in the top category, i.e. user who contributed to less popular categories
 ```mysql
 SELECT
    u.user_id,
@@ -132,7 +132,7 @@ LIMIT 15;
 
 ![Table Row Counts](https://github.com/cs411-alawini/sp25-cs411-team084-BEAT/blob/main/doc/Pictures/Query_3.png)
 
-* Query 4: Find top 15 most active users based on event participation and category interests
+#### Query 4: Find top 15 most active users based on event participation and category interests
 ```mysql
 WITH UserActivity AS (
 SELECT
@@ -157,7 +157,7 @@ LIMIT 15;
 
 ![Table Row Counts](https://github.com/cs411-alawini/sp25-cs411-team084-BEAT/blob/main/doc/Pictures/Query_4.png)
 
-* Query 5: Find Categories with No Events Assigned 
+#### Query 5: Find Categories with No Events Assigned 
 ```mysql
 SELECT
   c.category_id, c.category_name
