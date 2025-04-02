@@ -1,4 +1,6 @@
+# Database Implementation
 ## Logical Database Schema: 
+```mysql
 CREATE TABLE Users (
     user_id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     username VARCHAR(50) NOT NULL,
@@ -45,6 +47,37 @@ CREATE TABLE EventCategory (
     PRIMARY KEY (event_id, category_id),
     FOREIGN KEY (event_id) REFERENCES Events(event_id) ON DELETE CASCADE,
     FOREIGN KEY (category_id) REFERENCES Categories(category_id) ON DELETE CASCADE );
+```
 
-## Database Connection
+## Database Connection and Row Counts
 ![Database Connection](https://github.com/cs411-alawini/sp25-cs411-team084-BEAT/blob/main/doc/Pictures/Database_Connection.png)
+![Table Row Counts](https://github.com/cs411-alawini/sp25-cs411-team084-BEAT/blob/main/doc/Pictures/Database_Table_RowCount.png)
+
+# Queries and Indexing
+## Queries
+* Query 1:  Find the most popular event category based on event count, only returns categories with higher than average distinct user contributions
+```mysql
+SELECT ranked.category_name, ranked.event_count
+FROM (
+	SELECT c.category_name, COUNT(*) AS event_count,
+       	COUNT(DISTINCT e.user_id) AS distinct_users,
+       	RANK() OVER (PARTITION BY c.category_name ORDER BY COUNT(*) DESC) AS ranking
+	FROM Events e
+	JOIN EventCategory ec ON e.event_id = ec.event_id
+	JOIN Categories c ON ec.category_id = c.category_id
+	JOIN Sources s ON e.source_id = s.source_id
+	GROUP BY c.category_name
+) AS ranked
+WHERE ranked.ranking = 1
+AND ranked.distinct_users > (
+	SELECT AVG(distinct_user_count)
+	FROM (
+    	SELECT COUNT(DISTINCT e.user_id) AS distinct_user_count
+    	FROM Events e
+    	JOIN EventCategory ec ON e.event_id = ec.event_id
+    	GROUP BY ec.category_id
+	) AS category_users
+)
+ORDER BY ranked.event_count DESC, ranked.category_name
+LIMIT 15;
+```
