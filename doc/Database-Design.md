@@ -170,8 +170,10 @@ LIMIT 15;
 
 ![Table Row Counts](https://github.com/cs411-alawini/sp25-cs411-team084-BEAT/blob/main/doc/Pictures/Query_5.png)
 
+The result of this query was only 4 rows long.
+
 ## Indexing
-* Query 1: Find the most popular event category based on event count, only returns categories with higher than average distinct user contributions
+#### Query 1: Find the most popular event category based on event count, only returns categories with higher than average distinct user contributions
 
 Before Indexing:
 ![q1i0](https://github.com/cs411-alawini/sp25-cs411-team084-BEAT/blob/main/doc/Pictures/q1_i0.png)
@@ -195,7 +197,7 @@ The final index design:
 idx_eventcategory_category_id
 The index on EventCategory(category_id) was used to save a cost of about 2167 in the GROUP BY clause, however it is not entirely necessary since our dataset is highly scattered, most users create only a few events, and category usage is low and varied. 
 
-* Query 2: Select the most categories that are in most user’s default preference
+#### Query 2: Select the most categories that are in most user’s default preference
 
 Before Indexing:
 ![q1i0](https://github.com/cs411-alawini/sp25-cs411-team084-BEAT/blob/main/doc/Pictures/q2_i0.png)
@@ -218,7 +220,7 @@ idx_ucp_category_id_user_id:
 The final index design:
 No new indices were added since the FK already makes the query efficient. Because of the sparsity of the data, indexing had limited impact, as the query still executed a full scan over indexes due to low overlaps
 
-* Query 3: Users who has contributed, but none of the contribution are in the top category
+#### Query 3: Users who has contributed, but none of the contribution are in the top category
 
 Before Indexing:
 ![q1i0](https://github.com/cs411-alawini/sp25-cs411-team084-BEAT/blob/main/doc/Pictures/q3_i0.png)
@@ -241,7 +243,7 @@ idx_eventcategory_category_id:
 The final index design:
 No new indices were added since the FK already makes the query efficient. The indexing did not help improve the cost since the FK was already optimal, thus making the join process the most efficient already. 
 
-*Query 4: Find top 15 most active users based on event participation and category interests
+#### Query 4: Find top 15 most active users based on event participation and category interests
 
 Before Indexing:
 ![q1i0](https://github.com/cs411-alawini/sp25-cs411-team084-BEAT/blob/main/doc/Pictures/q4_i0.png)
