@@ -47,6 +47,7 @@ router.get('/', async (req, res) => {
   }
 });
 
+// POST /api/events
 router.post('/', async (req, res) => {
     const { user_id, event_name, event_date, event_description, category_ids } = req.body;
   
@@ -78,5 +79,19 @@ router.post('/', async (req, res) => {
     }
   });
   
+// GET /events/trending
+router.get('/trending', async (req, res) => {
+  // logic to fetch trending events
+});
+
+// DELETE /events/:id
+router.delete('/:id', async (req, res) => {
+  // logic to delete user's own event
+});
+
+// GET /events/:id
+router.get('/:id', async (req, res) => {
+  // logic to get single event detail
+});
 
 module.exports = router;

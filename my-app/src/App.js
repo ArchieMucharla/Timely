@@ -1,61 +1,31 @@
-import { useEffect, useState } from 'react';
-import CategoryFilter from './components/CategoryFilter';
-import EventList from './components/EventList';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import EventsPage from './pages/EventsPage';
+import UserProfile from './pages/UserProfile';
+import MyEventsPage from './pages/MyEventsPage';
+import AdminDashboard from './pages/AdminDashboard';
+import EventViewPage from './pages/EventViewPage'; // optional
+import LoginPage from './pages/LoginPage';
 
-const BACKEND = 'http://localhost:5050';
+<Route path="/login" element={<LoginPage />} />
 
 function App() {
-  const [categories, setCategories] = useState([]);
-  const [selectedCategories, setSelectedCategories] = useState([]);
-  const [events, setEvents] = useState([]);
-
-  useEffect(() => {
-    fetch(`${BACKEND}/api/categories`)
-      .then(res => res.json())
-      .then(setCategories)
-      .catch(console.error);
-  }, []);
-
-  useEffect(() => {
-    if (selectedCategories.length === 0) {
-      setEvents([]);
-      return;
-    }
-
-    const query = selectedCategories.join(',');
-    fetch(`${BACKEND}/api/events?category=${query}`)
-      .then(res => res.json())
-      .then(setEvents)
-      .catch(console.error);
-  }, [selectedCategories]);
-
-  const toggleCategory = (catId) => {
-    setSelectedCategories(prev =>
-      prev.includes(catId)
-        ? prev.filter(id => id !== catId)
-        : [...prev, catId]
-    );
-  };
-
   return (
-    <div style={{ padding: '2rem' }}>
-      <h1>Timeline App</h1>
+    <Router>
+      <div style={{ padding: '1rem' }}>
+        {/* You can add <Navbar /> here */}
 
-      <h2>Filter by Category</h2>
-      <CategoryFilter
-        categories={categories}
-        selectedCategories={selectedCategories}
-        toggleCategory={toggleCategory}
-      />
-
-      <h2 style={{ marginTop: '2rem' }}>Events</h2>
-      {selectedCategories.length > 0 ? (
-        <EventList events={events} />
-      ) : (
-        <p>Please select one or more categories.</p>
-      )}
-    </div>
+        <Routes>
+          <Route path="/" element={<EventsPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/profile" element={<UserProfile />} />
+          <Route path="/my-events" element={<MyEventsPage />} />
+          <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/events/:id" element={<EventViewPage />} /> {/* optional */}
+        </Routes>
+      </div>
+    </Router>
   );
 }
+
 
 export default App;
