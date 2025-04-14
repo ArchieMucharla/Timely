@@ -1,18 +1,27 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import CategoryFilter from '../components/CategoryFilter';
 import EventList from '../components/EventList';
-// import SearchBar from '../components/SearchBar' ← optional to add
-// import EventDetail from '../components/EventDetail' ← optional modal
 
 const BACKEND = 'http://localhost:5050';
 
 function EventsPage() {
+  const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [searchText, setSearchText] = useState('');
   const [events, setEvents] = useState([]);
+  const [currentUser, setCurrentUser] = useState(null);
 
-  // Fetch categories on mount
+  // ✅ Fetch login status on mount
+  useEffect(() => {
+    fetch(`${BACKEND}/api/users/me`, { credentials: 'include' })
+      .then((res) => res.ok ? res.json() : null)
+      .then(setCurrentUser)
+      .catch(console.error);
+  }, []);
+
+  // ✅ Fetch categories on mount
   useEffect(() => {
     fetch(`${BACKEND}/api/categories`)
       .then((res) => res.json())
@@ -20,10 +29,9 @@ function EventsPage() {
       .catch(console.error);
   }, []);
 
-  // Fetch events when filters change
+  // ✅ Fetch events when filters change
   useEffect(() => {
     const params = new URLSearchParams();
-
     if (selectedCategories.length > 0) {
       params.set('category', selectedCategories.join(','));
     }
@@ -37,16 +45,37 @@ function EventsPage() {
       .catch(console.error);
   }, [selectedCategories, searchText]);
 
-  // Toggle category checkbox
   const toggleCategory = (catId) => {
     setSelectedCategories((prev) =>
       prev.includes(catId) ? prev.filter((id) => id !== catId) : [...prev, catId]
     );
   };
 
+  // ✅ Log out handler
+  const handleLogout = async () => {
+    await fetch(`${BACKEND}/api/users/logout`, {
+      method: 'POST',
+      credentials: 'include',
+    });
+    setCurrentUser(null); // clear locally
+  };
+
   return (
     <div style={{ padding: '2rem' }}>
       <h1>🗓️ Explore Events</h1>
+
+      {/* ✅ Login status section */}
+      <section style={{ marginBottom: '1rem' }}>
+        {currentUser ? (
+          <>
+            <p>👋 Welcome back, <strong>{currentUser.username}</strong>!</p>
+            <button onClick={() => navigate('/profile')}>My Profile</button>
+            <button onClick={handleLogout} style={{ marginLeft: '1rem' }}>Log Out</button>
+          </>
+        ) : (
+          <button onClick={() => navigate('/login')}>Log In</button>
+        )}
+      </section>
 
       <section>
         <h3>Filter by Category</h3>

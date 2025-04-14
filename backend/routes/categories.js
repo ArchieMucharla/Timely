@@ -13,4 +13,14 @@ router.get('/', async (req, res) => {
   }
 });
 
+// POST /categories
+router.post('/', async (req, res) => {
+  // dev-only: create new category (possibly with parent_id)
+});
+
+// DELETE /categories/:id
+router.delete('/:id', async (req, res) => {
+  // dev-only: delete category
+});
+
 module.exports = router;

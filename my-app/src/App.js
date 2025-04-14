@@ -4,6 +4,9 @@ import UserProfile from './pages/UserProfile';
 import MyEventsPage from './pages/MyEventsPage';
 import AdminDashboard from './pages/AdminDashboard';
 import EventViewPage from './pages/EventViewPage'; // optional
+import LoginPage from './pages/LoginPage';
+
+<Route path="/login" element={<LoginPage />} />
 
 function App() {
   return (
@@ -13,6 +16,7 @@ function App() {
 
         <Routes>
           <Route path="/" element={<EventsPage />} />
+          <Route path="/login" element={<LoginPage />} />
           <Route path="/profile" element={<UserProfile />} />
           <Route path="/my-events" element={<MyEventsPage />} />
           <Route path="/admin" element={<AdminDashboard />} />
@@ -22,5 +26,6 @@ function App() {
     </Router>
   );
 }
+
 
 export default App;
