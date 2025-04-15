@@ -82,16 +82,19 @@ router.post('/', async (req, res) => {
 // GET /events/trending
 router.get('/trending', async (req, res) => {
   // logic to fetch trending events
+  // undone
 });
 
 // DELETE /events/:id
 router.delete('/:id', async (req, res) => {
   // logic to delete user's own event
+  // undone
 });
 
 // GET /events/:id
 router.get('/:id', async (req, res) => {
   // logic to get single event detail
+  // undone
 });
 
 module.exports = router;
