@@ -32,6 +32,7 @@ router.post('/login', async (req, res) => {
 
   req.session.userId = user.user_id;
   req.session.username = user.username;
+  req.session.role = user.role;
 
   res.json({ message: 'Login successful', userId: user.user_id });
 });
@@ -73,11 +74,18 @@ router.delete('/me', isAuthenticated, async (req, res) => {
 
 // GET /users/me — check current session
 router.get('/me', (req, res) => {
-    if (!req.session.userId) {
-      return res.status(401).json({ error: 'Not logged in' });
-    }
-    res.json({ userId: req.session.userId, username: req.session.username });
+  if (!req.session.userId) {
+    return res.status(401).json({ error: 'Not logged in' });
+  }
+  res.json({
+    userId: req.session.userId,
+    username: req.session.username,
+    role: req.session.role, // ← Add this line
   });
+});
+
   
+// GET the top contributed user
+router
 
 module.exports = router;

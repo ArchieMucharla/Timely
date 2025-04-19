@@ -72,6 +72,12 @@ function EventsPage() {
             <button onClick={() => navigate('/profile')}>My Profile</button>
             <button onClick={() => navigate('/create_event')}>Create Event</button>
             <button onClick={handleLogout} style={{ marginLeft: '1rem' }}>Log Out</button>
+
+            {currentUser?.role === 'dev' && (
+              <button onClick={() => navigate('/admin')} style={{ marginBottom: '1rem' }}>
+                Go to Admin Panel
+              </button>
+            )}
           </>
         ) : (
           <button onClick={() => navigate('/login')}>Log In</button>
