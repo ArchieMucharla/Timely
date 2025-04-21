@@ -80,7 +80,7 @@ router.get('/me', (req, res) => {
   res.json({
     userId: req.session.userId,
     username: req.session.username,
-    role: req.session.role, // ← Add this line
+    role: req.session.role,
   });
 });
 
