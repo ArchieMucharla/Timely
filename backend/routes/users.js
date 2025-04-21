@@ -33,6 +33,7 @@ router.post('/login', async (req, res) => {
   req.session.userId = user.user_id;
   req.session.username = user.username;
   req.session.role = user.role;
+  
 
   res.json({ message: 'Login successful', userId: user.user_id });
 });
