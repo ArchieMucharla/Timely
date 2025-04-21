@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 export default function AdminPage() {
   const [userSearch, setUserSearch] = useState('');
   const [userResults, setUserResults] = useState([]);
-  const [usersByCount, setUsersByCount] = useState([]);
 
   const [eventSearch, setEventSearch] = useState('');
   const [eventResults, setEventResults] = useState([]);
@@ -15,13 +14,6 @@ export default function AdminPage() {
     const data = await res.json();
     console.log('👀 API returned:', data);
     setUserResults(data);
-  };
-  
-  
-  const fetchUsersByEventCount = async () => {
-    const res = await fetch(`http://localhost:5050/api/admin/users-by-event-count`,  { credentials: 'include' });
-    const data = await res.json();
-    setUsersByCount(data);
   };
   
   const searchEvents = async () => {
@@ -54,19 +46,6 @@ export default function AdminPage() {
           {Array.isArray(userResults) && userResults.map((user) => (
             <li key={user.user_id}>
               {user.username} (ID: {user.id}, Role: {user.role})
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      {/* Users by Event Count */}
-      <section>
-        <h3>📊 Users by Event Count</h3>
-        <button onClick={fetchUsersByEventCount}>View</button>
-        <ul>
-          {Array.isArray(usersByCount) && usersByCount.map((u) => (
-            <li key={u.user_id}>
-              {u.username} — {u.event_count} events
             </li>
           ))}
         </ul>

@@ -86,7 +86,25 @@ router.get('/me', (req, res) => {
 });
 
   
-// GET the top contributed user
-router
+// GET show how many events each user created
+router.get('/user-leader-board', async (req, res) => {
+  try {
+    const [rows] = await db.execute(`
+      SELECT 
+        u.user_id AS id,
+        u.username,
+        COUNT(e.event_id) AS event_count
+      FROM Users u
+      LEFT JOIN Events e ON u.user_id = e.user_id
+      GROUP BY u.user_id, u.username
+      ORDER BY u.event_count DESC;
+    `);
+    //console.log('✅ Result:', rows);
+    res.json(rows);
+  } catch (err) {
+    console.error('🔥 SQL error: ', err);
+    res.status(500).json({ error: 'Failed to search users' });
+  }
+});
 
 module.exports = router;

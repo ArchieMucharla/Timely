@@ -38,28 +38,6 @@ router.get('/users', verifyDev, async (req, res) => {
   }
 });
 
-
-// GET /admin/users-by-event-count - show how many events each user created
-router.get('/users-by-event-count', verifyDev, async (req, res) => {
-  try {
-    const [rows] = await db.execute(`
-      SELECT 
-        u.user_id AS id,
-        u.username,
-        COUNT(e.event_id) AS event_count
-      FROM Users u
-      LEFT JOIN Events e ON u.user_id = e.user_id
-      GROUP BY u.user_id, u.username
-      ORDER BY u.event_count DESC;
-    `);
-    //console.log('✅ Result:', rows);
-    res.json(rows);
-  } catch (err) {
-    console.error('🔥 SQL error in /admin/users:', err);
-    res.status(500).json({ error: 'Failed to search users' });
-  }
-});
-
 // DELETE /admin/users/:id - delete a user by ID
 router.delete('/users/:id', verifyDev, async (req, res) => {
   const userId = req.params.id;
