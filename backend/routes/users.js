@@ -115,6 +115,22 @@ router.get('/leaderboard', async (req, res) => {
   }
 });
 
+// GET /users/me/categories — get preferred category IDs
+router.get('/me/categories', async (req, res) => {
+  if (!req.session.userId) return res.status(401).json({ error: 'Not logged in' });
+
+  try {
+    const [rows] = await db.execute(
+      'SELECT category_id FROM UserCategoryPreferences WHERE user_id = ?',
+      [req.session.userId]
+    );
+    const categoryIds = rows.map(r => r.category_id);
+    res.json(categoryIds);
+  } catch (err) {
+    console.error('Error fetching user preferred categories:', err.message);
+    res.status(500).json({ error: 'Could not fetch preferences' });
+  }
+});
 
 
 module.exports = router;

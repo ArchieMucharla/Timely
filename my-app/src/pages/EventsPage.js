@@ -25,14 +25,25 @@ function EventsPage() {
   const [searchText, setSearchText] = useState('');
   const [events, setEvents] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
+  const [hasLoadedPreferences, setHasLoadedPreferences] = useState(false);
 
+  // Fetch current user + preferred categories
   useEffect(() => {
     fetch(`${BACKEND}/api/users/me`, { credentials: 'include' })
       .then((res) => res.ok ? res.json() : null)
-      .then(setCurrentUser)
+      .then(async (user) => {
+        setCurrentUser(user);
+        if (user) {
+          const res = await fetch(`${BACKEND}/api/users/me/categories`, { credentials: 'include' });
+          const preferred = await res.json();
+          setSelectedCategories(preferred);
+        }
+        setHasLoadedPreferences(true);
+      })
       .catch(console.error);
   }, []);
 
+  // Fetch category list
   useEffect(() => {
     fetch(`${BACKEND}/api/categories`)
       .then((res) => res.json())
@@ -40,7 +51,10 @@ function EventsPage() {
       .catch(console.error);
   }, []);
 
+  // Fetch filtered events
   useEffect(() => {
+    if (!hasLoadedPreferences) return;
+
     const params = new URLSearchParams();
     if (selectedCategories.length > 0) {
       params.set('category', selectedCategories.join(','));
@@ -53,7 +67,7 @@ function EventsPage() {
       .then((res) => res.json())
       .then(setEvents)
       .catch(console.error);
-  }, [selectedCategories, searchText]);
+  }, [selectedCategories, searchText, hasLoadedPreferences]);
 
   const toggleCategory = (catId) => {
     setSelectedCategories((prev) =>
