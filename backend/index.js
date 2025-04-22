@@ -38,9 +38,10 @@ app.use(session({
   }
 }));
 
+
 // 📦 Route mounting
 app.use('/api/events', require('./routes/events'));
-app.use('/api/users', require('./routes/users'));       // ✅ Make sure this is enabled
+app.use('/api/users', require('./routes/users'));       
 app.use('/api/categories', require('./routes/categories'));
 app.use('/api/sources', require('./routes/sources'));
 app.use('/api/admin', require('./routes/admin'));

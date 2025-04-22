@@ -131,6 +131,45 @@ router.get('/me/categories', async (req, res) => {
     res.status(500).json({ error: 'Could not fetch preferences' });
   }
 });
+// POST /users/me/categories — save preferred category IDs
+router.post('/me/categories', async (req, res) => {
+  if (!req.session.userId) return res.status(401).json({ error: 'Not logged in' });
+
+  const { category_ids } = req.body;
+  if (!Array.isArray(category_ids)) {
+    return res.status(400).json({ error: 'category_ids must be an array' });
+  }
+
+  const conn = await db.getConnection();
+  try {
+    await conn.beginTransaction();
+
+    // Delete old preferences
+    await conn.execute(
+      'DELETE FROM UserCategoryPreferences WHERE user_id = ?',
+      [req.session.userId]
+    );
+
+    // Insert new preferences
+    if (category_ids.length > 0) {
+      const values = category_ids.map(id => [req.session.userId, id]);
+      await conn.query(
+        'INSERT INTO UserCategoryPreferences (user_id, category_id) VALUES ?',
+        [values]
+      );
+    }
+
+    await conn.commit();
+    res.json({ message: 'Preferences updated successfully' });
+  } catch (err) {
+    await conn.rollback();
+    console.error('Error saving preferences:', err.message);
+    res.status(500).json({ error: 'Failed to update preferences' });
+  } finally {
+    conn.release();
+  }
+});
+
 
 
 module.exports = router;
