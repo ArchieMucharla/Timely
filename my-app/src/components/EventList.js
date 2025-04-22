@@ -1,16 +1,184 @@
+import { useState } from 'react';
+
 function EventList({ events }) {
-  if (events.length === 0) return <p>No events found.</p>;
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [tooltipLeft, setTooltipLeft] = useState(null);
+
+  if (!Array.isArray(events) || events.length === 0) {
+    return <p>No events found.</p>;
+  }
+
+  const getTime = (date) => new Date(date).getTime();
+  const timestamps = events.map((e) => getTime(e.event_date));
+  const minDate = Math.min(...timestamps);
+  const maxDate = Math.max(...timestamps);
+  const range = maxDate - minDate;
+
+  const minYear = new Date(minDate).getFullYear();
+  const maxYear = new Date(maxDate).getFullYear();
+  const tickInterval = 50;
+  const yearTicks = [];
+  for (let y = Math.floor(minYear / tickInterval) * tickInterval; y <= maxYear; y += tickInterval) {
+    yearTicks.push(y);
+  }
 
   return (
-    <ul>
-      {events.map((event) => (
-        <li key={event.event_id} style={{ marginBottom: '1rem' }}>
-          <strong>{event.event_name}</strong> — {event.event_date}<br />
-          {event.event_description}<br />
-          <em>Categories: {event.categories}</em>
-        </li>
-      ))}
-    </ul>
+    <div style={{ padding: '3rem 1rem', position: 'relative' }}>
+      {selectedEvent && (
+        <div
+          style={{
+            position: 'absolute',
+            left: tooltipLeft,
+            transform: 'translateY(-100%)',
+            top: 'calc(50% - 100px)',
+            backgroundColor: '#fff',
+            border: '1px solid #ccc',
+            borderRadius: '10px',
+            padding: '1rem',
+            width: '300px',
+            maxWidth: '90vw',
+            boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
+            zIndex: 9999,
+            textAlign: 'left',
+            whiteSpace: 'normal',
+            wordBreak: 'break-word',
+            overflowWrap: 'anywhere',
+            display: 'inline-block',
+          }}
+        >
+          <strong
+            style={{
+              display: 'block',
+              fontSize: '16px',
+              lineHeight: '1.4',
+              wordBreak: 'break-word',
+              overflowWrap: 'anywhere',
+            }}
+          >
+            {selectedEvent.event_name}
+          </strong>
+          <p style={{ fontSize: '13px', margin: '6px 0' }}>
+            📅 {new Date(selectedEvent.event_date).toLocaleDateString()}
+          </p>
+          <p style={{ fontSize: '12px', overflowWrap: 'anywhere' }}>{selectedEvent.event_description}</p>
+          <em style={{ fontSize: '11px', color: '#555' }}>
+            Categories: {selectedEvent.categories}
+          </em>
+        </div>
+      )}
+
+      <div
+        style={{
+          position: 'relative',
+          height: '300px',
+          overflowX: 'auto',
+          whiteSpace: 'normal',
+          wordBreak: 'break-word',
+          overflowWrap: 'break-word',
+          borderBottom: '2px solid #ccc',
+          border: '1px dashed #ccc',
+          paddingBottom: '4rem',
+        }}
+        id="timeline-scroll"
+      >
+        {/* Timeline Line */}
+        <div
+          style={{
+            position: 'absolute',
+            top: '50%',
+            left: 0,
+            right: 0,
+            height: '4px',
+            backgroundColor: '#ddd',
+            zIndex: 1,
+          }}
+        />
+
+        {/* Year Tick Marks */}
+        {yearTicks.map((year) => {
+          const left = ((getTime(`${year}-01-01`) - minDate) / range) * 100;
+          return (
+            <div
+              key={year}
+              style={{
+                position: 'absolute',
+                left: `${left}%`,
+                transform: 'translateX(-50%)',
+                top: 'calc(50% + 16px)',
+                fontSize: '12px',
+                color: '#777',
+                zIndex: 2,
+                textAlign: 'center',
+              }}
+            >
+              <div style={{ marginBottom: '6px' }}>|</div>
+              {year}
+            </div>
+          );
+        })}
+
+        {/* Event Dots */}
+        {events.map((event) => {
+          const left = ((getTime(event.event_date) - minDate) / range) * 100;
+
+          return (
+            <div
+              key={event.event_id}
+              onClick={(e) => {
+                const parent = document.getElementById('timeline-scroll');
+                const rect = e.currentTarget.getBoundingClientRect();
+                const parentRect = parent.getBoundingClientRect();
+                const absoluteLeft = rect.left - parentRect.left + parent.scrollLeft;
+
+                const tooltipWidth = 300;
+                const parentWidth = parent.offsetWidth;
+                let leftPos = absoluteLeft - tooltipWidth / 2;
+
+                // Clamp tooltip within visible range
+                if (leftPos < 8) leftPos = 8;
+                if (leftPos > parentWidth - tooltipWidth - 8) {
+                  leftPos = parentWidth - tooltipWidth - 8;
+                }
+
+                setTooltipLeft(`${leftPos}px`);
+                setSelectedEvent((prev) =>
+                  prev?.event_id === event.event_id ? null : event
+                );
+
+                e.currentTarget.scrollIntoView({
+                  behavior: 'smooth',
+                  inline: 'center',
+                  block: 'nearest',
+                });
+              }}
+              style={{
+                position: 'absolute',
+                left: `${left}%`,
+                top:
+                  selectedEvent?.event_id === event.event_id
+                    ? 'calc(50% - 9px)'
+                    : 'calc(50% - 6px)',
+                width: selectedEvent?.event_id === event.event_id ? '24px' : '18px',
+                height: selectedEvent?.event_id === event.event_id ? '24px' : '18px',
+                backgroundColor:
+                  selectedEvent?.event_id === event.event_id ? 'orange' : '#8884d8',
+                borderRadius: '50%',
+                cursor: 'pointer',
+                zIndex: selectedEvent?.event_id === event.event_id ? 999 : 3,
+                transform: 'translateX(-50%)',
+                transition: 'transform 0.2s ease, background-color 0.2s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateX(-50%) scale(3)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateX(-50%) scale(1)';
+              }}
+            />
+          );
+        })}
+      </div>
+    </div>
   );
 }
 
