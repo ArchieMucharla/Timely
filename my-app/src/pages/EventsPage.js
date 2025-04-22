@@ -121,6 +121,7 @@ function EventsPage() {
                   Welcome, <strong>{currentUser.username}</strong>
                 </span>
                 <button onClick={() => navigate('/profile')} style={buttonStyle}>Profile</button>
+                <button onClick={() => navigate('/leaderboard')} style={buttonStyle}>Leaderboard</button>
                 <button onClick={handleLogout} style={buttonStyle}>Log Out</button>
                 {currentUser?.role === 'dev' && (
                   <button onClick={() => navigate('/admin')} style={buttonStyle}>Admin</button>

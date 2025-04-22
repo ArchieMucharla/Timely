@@ -4,6 +4,7 @@ import UserProfile from './pages/UserProfile';
 import AdminDashboard from './pages/AdminDashboard';
 import LoginPage from './pages/LoginPage';
 import CreateEventPage from './pages/CreateEventPage';
+import LeaderBoard from './pages/LeaderBoard';
 
 <Route path="/login" element={<LoginPage />} />
 
@@ -19,6 +20,7 @@ function App() {
           <Route path="/profile" element={<UserProfile />} />
           <Route path="/create_event" element={<CreateEventPage />} />
           <Route path="/admin" element={<AdminDashboard />} />
+          <Route path="/leaderboard" element={<LeaderBoard />} />
         </Routes>
       </div>
     </Router>

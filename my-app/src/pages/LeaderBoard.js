@@ -1,12 +1,65 @@
-{/* Users by Event Count */}
-<section>
-<h3>📊 Users by Event Count</h3>
-<button onClick={fetchUsersByEventCount}>View</button>
-<ul>
-  {Array.isArray(usersByCount) && usersByCount.map((u) => (
-    <li key={u.user_id}>
-      {u.username} — {u.event_count} events
-    </li>
-  ))}
-</ul>
-</section>
+import { useEffect, useState } from 'react';
+
+const BACKEND = 'http://localhost:5050';
+
+function LeaderBoard() {
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    fetch(`${BACKEND}/api/users/leaderboard`)
+      .then((res) => res.json())
+      .then(setUsers)
+      .catch(console.error);
+  }, []);
+
+  return (
+    <div style={{ padding: '3rem 1rem', minHeight: '100vh', backgroundColor: '#f9fafb' }}>
+      <div style={{
+        maxWidth: '800px',
+        margin: '0 auto',
+        backgroundColor: '#ffffff',
+        borderRadius: '1rem',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+        padding: '2rem'
+      }}>
+        <h1 style={{
+          fontSize: '2rem',
+          fontWeight: '700',
+          marginBottom: '1.5rem',
+          color: '#0f172a',
+          textAlign: 'center'
+        }}>
+          Leaderboard:
+        </h1>
+
+        {users.length === 0 ? (
+          <p style={{ color: '#6b7280', textAlign: 'center' }}>No active users yet.</p>
+        ) : (
+          <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+            {users.map((u, i) => (
+              <li key={u.user_id} style={{
+                padding: '1rem',
+                marginBottom: '1rem',
+                borderRadius: '0.75rem',
+                backgroundColor: '#f1f5f9',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                fontSize: '1rem',
+              }}>
+                <div>
+                  <strong>#{i + 1}</strong> — <span style={{ fontWeight: 600 }}>{u.username}</span>
+                </div>
+                <div style={{ fontSize: '0.875rem', color: '#475569' }}>
+                  {u.events_created} events · {u.categories_followed} categories
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export default LeaderBoard;
