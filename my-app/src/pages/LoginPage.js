@@ -7,12 +7,11 @@ function LoginPage() {
   const [currentUser, setCurrentUser] = useState(null);
   const navigate = useNavigate();
 
-  // Check if user is already logged in
   useEffect(() => {
     fetch('http://localhost:5050/api/users/me', {
       credentials: 'include',
     })
-      .then((res) => res.ok ? res.json() : null)
+      .then((res) => (res.ok ? res.json() : null))
       .then(setCurrentUser)
       .catch(() => {});
   }, []);
@@ -27,7 +26,7 @@ function LoginPage() {
     });
 
     if (res.ok) {
-      navigate('/'); // ✅ Redirect to Events page
+      navigate('/');
     } else {
       alert('Login failed');
     }
@@ -50,35 +49,110 @@ function LoginPage() {
   };
 
   return (
-    <div style={{ padding: '2rem' }}>
-      <h2>{currentUser ? `👋 Welcome ${currentUser.username}` : 'Login or Register'}</h2>
+    <div
+      style={{
+        minHeight: '100vh',
+        backgroundColor: '#f1f5f9',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        fontFamily: '"Inter", sans-serif',
+        padding: '2rem',
+      }}
+    >
+      <div
+        style={{
+          width: '100%',
+          maxWidth: '420px',
+          backgroundColor: '#ffffff',
+          borderRadius: '16px',
+          boxShadow: '0 4px 16px rgba(0,0,0,0.06)',
+          padding: '2.5rem 2rem',
+        }}
+      >
+        <h2
+          style={{
+            fontSize: '1.5rem',
+            fontWeight: '700',
+            marginBottom: '1.5rem',
+            color: '#0f172a',
+            textAlign: 'center',
+          }}
+        >
+          {currentUser ? `👋 Welcome ${currentUser.username}` : 'Login or Register'}
+        </h2>
 
-      <form onSubmit={handleLogin}>
-        <div>
-          <label>Username</label><br />
-          <input
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
-        </div>
-        <div style={{ marginTop: '1rem' }}>
-          <label>Password</label><br />
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        <div style={{ marginTop: '1.5rem' }}>
-          <button type="submit">Log In</button>
-          <button type="button" onClick={handleRegister} style={{ marginLeft: '1rem' }}>
-            Create Account
-          </button>
-        </div>
-      </form>
+        <form onSubmit={handleLogin}>
+          <div style={{ marginBottom: '1rem' }}>
+            <label style={{ fontWeight: '600', color: '#475569' }}>Username</label>
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+              style={{
+                width: '100%',
+                padding: '10px',
+                borderRadius: '10px',
+                border: '1px solid #cbd5e1',
+                marginTop: '0.25rem',
+              }}
+            />
+          </div>
+
+          <div style={{ marginBottom: '1.5rem' }}>
+            <label style={{ fontWeight: '600', color: '#475569' }}>Password</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              style={{
+                width: '100%',
+                padding: '10px',
+                borderRadius: '10px',
+                border: '1px solid #cbd5e1',
+                marginTop: '0.25rem',
+              }}
+            />
+          </div>
+
+          <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem' }}>
+            <button
+              type="submit"
+              style={{
+                flex: 1,
+                padding: '10px 16px',
+                background: 'linear-gradient(to right, #6366f1, #3b82f6)',
+                border: 'none',
+                color: '#fff',
+                borderRadius: '10px',
+                fontWeight: '600',
+                cursor: 'pointer',
+              }}
+            >
+              Log In
+            </button>
+
+            <button
+              type="button"
+              onClick={handleRegister}
+              style={{
+                flex: 1,
+                padding: '10px 16px',
+                background: '#e2e8f0',
+                border: 'none',
+                borderRadius: '10px',
+                fontWeight: '600',
+                cursor: 'pointer',
+                color: '#1e293b',
+              }}
+            >
+              Create Account
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }
