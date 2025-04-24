@@ -1,3 +1,4 @@
+const { isAuthenticated} = require('./users.js'); //to get userId in delete
 const express = require('express');
 const router = express.Router();
 const pool = require('../db');
@@ -82,19 +83,69 @@ router.post('/', async (req, res) => {
 // GET /events/trending
 router.get('/trending', async (req, res) => {
   // logic to fetch trending events
-  // undone
+  // untested (and might be unnecessary)
+  let sql = `
+    SELECT e.event_name, e.event_date, COUNT(DISTINCT ucp.user_id) AS interested_user_count
+    FROM Events e 
+    JOIN EventCategory ec ON e.event_id = ec.event_id
+    JOIN UserCategoryPreferences ucp ON ec.category_id = ucp.category_id
+    GROUP BY e.event_id, e.event_name, e.event_date
+    HAVING COUNT(DISTINCT ucp.user_id) > 1
+    ORDER BY interested_user_count DESC
+    LIMIT 10;
+    `;
+    try {
+      const [rows] = await pool.query(sql, params);
+      res.json(rows);
+    } catch (err) {
+      console.error('❌ Error fetching trending events:', err.message);
+      res.status(500).json({ error: 'Failed to fetch trending events' });
+    }
+
 });
 
 // DELETE /events/:id
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', isAuthenticated, async (req, res) => {
   // logic to delete user's own event
-  // undone
+  // untested
+  const eventId = req.params.id;
+  const userId = req.user.id;
+  const conn = await pool.getConnection(); 
+  try {
+    await conn.beginTransaction();
+    const result = await conn.query('SELECT user_id FROM Events WHERE event_id=$1', [eventId]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({error: 'Event not found'});
+    }
+    const eventUserId = result.rows[0].user_id;
+    if (userId !== eventUserId) {
+      return res.status(403).json({error: 'Can only delete events you have made.'});
+    } 
+    await conn.query('DELETE FROM Events WHERE event_id=$1', [eventId]);
+    await conn.commit();
+    res.json({ message: 'Event deleted' });
+  } catch (err) {
+    await conn.rollback();
+    res.status(500).json({ error: 'Failed to delete event' });
+  } finally {
+    conn.release();
+  }
 });
 
 // GET /events/:id
 router.get('/:id', async (req, res) => {
   // logic to get single event detail
-  // undone
+  // untested 
+  const eventId = req.params.id;
+  try {
+    const result = await pool.query('SELECT * FROM Events event_id=$1', [eventId]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({error: 'Event not found'});
+    }
+    res.status(200).json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({error: 'Internal service error'});
+  }
 });
 
 module.exports = router;
