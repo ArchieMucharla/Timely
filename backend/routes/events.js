@@ -82,8 +82,6 @@ router.post('/', async (req, res) => {
   
 // GET /events/trending
 router.get('/trending', async (req, res) => {
-  // logic to fetch trending events
-  // untested (and might be unnecessary)
   let sql = `
     SELECT e.event_name, e.event_date, COUNT(DISTINCT ucp.user_id) AS interested_user_count
     FROM Events e 
@@ -95,7 +93,7 @@ router.get('/trending', async (req, res) => {
     LIMIT 10;
     `;
     try {
-      const [rows] = await pool.query(sql, params);
+      const [rows] = await pool.query(sql);
       res.json(rows);
     } catch (err) {
       console.error('❌ Error fetching trending events:', err.message);
@@ -113,15 +111,15 @@ router.delete('/:id', isAuthenticated, async (req, res) => {
   const conn = await pool.getConnection(); 
   try {
     await conn.beginTransaction();
-    const result = await conn.query('SELECT user_id FROM Events WHERE event_id=$1', [eventId]);
-    if (result.rows.length === 0) {
+    const [rows] = await conn.query('SELECT user_id FROM Events WHERE event_id=?;', [eventId]);
+    if (rows.length === 0) {
       return res.status(404).json({error: 'Event not found'});
     }
-    const eventUserId = result.rows[0].user_id;
+    const eventUserId = rows[0].user_id;
     if (userId !== eventUserId) {
       return res.status(403).json({error: 'Can only delete events you have made.'});
     } 
-    await conn.query('DELETE FROM Events WHERE event_id=$1', [eventId]);
+    await conn.query('DELETE FROM Events WHERE event_id=?;', [eventId]);
     await conn.commit();
     res.json({ message: 'Event deleted' });
   } catch (err) {
@@ -134,16 +132,15 @@ router.delete('/:id', isAuthenticated, async (req, res) => {
 
 // GET /events/:id
 router.get('/:id', async (req, res) => {
-  // logic to get single event detail
-  // untested 
   const eventId = req.params.id;
   try {
-    const result = await pool.query('SELECT * FROM Events event_id=$1', [eventId]);
-    if (result.rows.length === 0) {
+    const [rows] = await pool.query('SELECT * FROM Events WHERE event_id=?;', [eventId]);
+    if (rows.length === 0) {
       return res.status(404).json({error: 'Event not found'});
     }
-    res.status(200).json(result.rows[0]);
+    res.json(rows)
   } catch (err) {
+    console.error('❌ Error fetching events:', err.message);
     res.status(500).json({error: 'Internal service error'});
   }
 });
