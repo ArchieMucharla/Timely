@@ -49,14 +49,33 @@ router.post('/logout', (req, res) => {
 
 // Middleware for protected routes
 function isAuthenticated(req, res, next) {
-  if (req.session.userId) return next();
+  if (req.session.userId) {
+    req.user = req.session.userId;
+    return next();
+  }
   res.status(401).json({ error: 'Unauthorized' });
 }
 
 // GET /users/me/events (protected)
 router.get('/me/events', isAuthenticated, async (req, res) => {
-  const [events] = await db.execute(
+  /*const [events] = await db.execute(
     'SELECT * FROM Events WHERE user_id = ?',
+    [req.session.userId]
+  );*/
+  const [events] = await db.execute(
+    `SELECT 
+      e.event_id,
+      e.user_id,
+      e.event_name,
+      e.event_date,
+      e.event_description,
+      e.source_id,
+      GROUP_CONCAT(c.category_name SEPARATOR ', ') AS categories
+    FROM Events e
+    JOIN  EventCategory ec ON e.event_id = ec.event_id
+    JOIN Categories c ON ec.category_id = c.category_id
+    WHERE e.user_id = ?
+    GROUP BY   e.event_id;`, 
     [req.session.userId]
   );
   res.json(events);

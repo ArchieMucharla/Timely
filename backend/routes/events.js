@@ -104,10 +104,8 @@ router.get('/trending', async (req, res) => {
 
 // DELETE /events/:id
 router.delete('/:id', isAuthenticated, async (req, res) => {
-  // logic to delete user's own event
-  // untested
   const eventId = req.params.id;
-  const userId = req.user.id;
+  const userId = req.user;
   const conn = await pool.getConnection(); 
   try {
     await conn.beginTransaction();

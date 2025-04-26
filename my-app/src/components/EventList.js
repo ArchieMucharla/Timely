@@ -1,12 +1,36 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-function EventList({ events }) {
+function EventList({ events: initialEvents }) {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [tooltipLeft, setTooltipLeft] = useState(null);
+  const [events, setEvents] = useState(initialEvents);
+
+  useEffect(() => {
+    if (initialEvents) {
+      setEvents(initialEvents); 
+    }
+  }, [initialEvents]);
 
   if (!Array.isArray(events) || events.length === 0) {
     return <p>No events found.</p>;
   }
+
+  const handleDeleteEvent = async (event_id) => {
+    try {
+      const response = await fetch(`http://localhost:5050/api/events/${event_id}`, { 
+        method: 'DELETE', 
+        credentials: 'include',
+      });
+      if (response.ok) {
+        setEvents((prev) => prev.filter((e) => e.event_id !== event_id));
+        setSelectedEvent(null);
+      } else if (response.status === 403) {
+        alert("You can only delete events you have created!");
+      }
+    } catch (err) {
+      console.err('Error deleteing event (frontend)');
+    }
+  };
 
   const getTime = (date) => new Date(date).getTime();
   const timestamps = events.map((e) => getTime(e.event_date));
@@ -64,6 +88,9 @@ function EventList({ events }) {
           <em style={{ fontSize: '11px', color: '#555' }}>
             Categories: {selectedEvent.categories}
           </em>
+          <button onClick={() =>  handleDeleteEvent(selectedEvent.event_id)}>
+            Delete
+          </button>
         </div>
       )}
 

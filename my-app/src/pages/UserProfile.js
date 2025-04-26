@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CategoryFilter from '../components/CategoryFilter';
+import EventList from '../components/EventList';
 
 const BACKEND = 'http://localhost:5050';
 
@@ -9,6 +10,7 @@ function UserProfile() {
   const [user, setUser] = useState(null);
   const [categories, setCategories] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
+  const [userEvents, setUserEvents] = useState([]);
 
   useEffect(() => {
     fetch(`${BACKEND}/api/users/me`, { credentials: 'include' })
@@ -24,6 +26,11 @@ function UserProfile() {
     fetch(`${BACKEND}/api/users/me/categories`, { credentials: 'include' })
       .then((res) => res.json())
       .then(setSelectedCategories)
+      .catch(console.error);
+
+    fetch(`${BACKEND}/api/users/me/events`, { credentials: 'include' })
+      .then((res) => res.json())
+      .then(setUserEvents)
       .catch(console.error);
   }, []);
 
@@ -76,6 +83,13 @@ function UserProfile() {
               <label style={{ fontWeight: '600', color: '#475569' }}>Username</label>
               <div style={{ paddingTop: '4px', color: '#1e293b' }}>{user.username}</div>
             </div>
+
+            <div style={{ marginBottom: '2rem' }}>
+              <label style={{ fontWeight: '600', color: '#475569', marginBottom: '0.5rem', display: 'block' }}>
+                Your Events
+              </label>
+              <EventList events={userEvents} />
+            </div> 
 
             <div style={{ marginBottom: '1.25rem' }}>
               <label style={{ fontWeight: '600', color: '#475569', marginBottom: '0.5rem', display: 'block' }}>
