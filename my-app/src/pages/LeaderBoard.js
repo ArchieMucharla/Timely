@@ -2,13 +2,29 @@ import { useEffect, useState } from 'react';
 
 const BACKEND = 'http://localhost:5050';
 
+// function LeaderBoard() {
+//   const [users, setUsers] = useState([]);
+
+//   useEffect(() => {
+//     fetch(`${BACKEND}/api/users/leaderboard`)
+//       .then((res) => res.json())
+//       .then(setUsers)
+//       .catch(console.error);
+//   }, []);
+
 function LeaderBoard() {
   const [users, setUsers] = useState([]);
+  const [categories, setCategories] = useState([]);
 
   useEffect(() => {
     fetch(`${BACKEND}/api/users/leaderboard`)
-      .then((res) => res.json())
+      .then(res => res.json())
       .then(setUsers)
+      .catch(console.error);
+
+    fetch(`${BACKEND}/api/categories/leaderboard`)
+      .then(res => res.json())
+      .then(setCategories)
       .catch(console.error);
   }, []);
 
@@ -29,7 +45,7 @@ function LeaderBoard() {
           color: '#0f172a',
           textAlign: 'center'
         }}>
-          Leaderboard:
+          Top Users:
         </h1>
 
         {users.length === 0 ? (
@@ -52,6 +68,45 @@ function LeaderBoard() {
                 </div>
                 <div style={{ fontSize: '0.875rem', color: '#475569' }}>
                   {u.events_created} events · {u.categories_followed} categories
+                </div>
+              </li>
+            ))}
+          </ul>
+
+        )}
+
+        <h1 style={{
+          fontSize: '2rem',
+          fontWeight: '700',
+          marginTop: '2rem',
+          marginBottom: '1.5rem',
+          color: '#0f172a',
+          textAlign: 'center'
+        }}>
+
+        Top Categories:
+        </h1>
+
+        {categories.length === 0 ? (
+          <p style={{ color: '#6b7280', textAlign: 'center' }}>No active categories yet.</p>
+        ) : (
+          <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+            {categories.map((c, i) => (
+              <li key={c.category_name} style={{
+                padding: '1rem',
+                marginBottom: '1rem',
+                borderRadius: '0.75rem',
+                backgroundColor: '#e0f2fe',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                fontSize: '1rem',
+              }}>
+                <div>
+                  <strong>#{i + 1}</strong> — <span style={{ fontWeight: 600 }}>{c.category_name}</span>
+                </div>
+                <div style={{ fontSize: '0.875rem', color: '#0369a1' }}>
+                  {c.event_count} events
                 </div>
               </li>
             ))}

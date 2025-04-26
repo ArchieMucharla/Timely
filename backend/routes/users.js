@@ -121,10 +121,11 @@ router.get('/leaderboard', async (req, res) => {
       FROM Users u
       LEFT JOIN Events e ON u.user_id = e.user_id
       LEFT JOIN UserCategoryPreferences ucp ON u.user_id = ucp.user_id
+      WHERE u.user_id != 1
       GROUP BY u.user_id, u.username
       HAVING activity_score > 0
       ORDER BY activity_score DESC
-      LIMIT 15;
+      LIMIT 5;
     `;
 
     console.log("Running leaderboard SQL...");
