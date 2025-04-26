@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-function EventList({ events: initialEvents }) {
+function EventList({ events: initialEvents, currentUser }) {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [tooltipLeft, setTooltipLeft] = useState(null);
   const [events, setEvents] = useState(initialEvents);
@@ -10,6 +10,12 @@ function EventList({ events: initialEvents }) {
       setEvents(initialEvents); 
     }
   }, [initialEvents]);
+
+  useEffect(() => {
+    console.log('Selected Event changed:', selectedEvent);
+    console.log('Current User in EventList:', currentUser);
+  }, [selectedEvent, currentUser]);
+  
 
   if (!Array.isArray(events) || events.length === 0) {
     return <p>No events found.</p>;
@@ -88,9 +94,29 @@ function EventList({ events: initialEvents }) {
           <em style={{ fontSize: '11px', color: '#555' }}>
             Categories: {selectedEvent.categories}
           </em>
-          <button onClick={() =>  handleDeleteEvent(selectedEvent.event_id)}>
-            Delete
-          </button>
+          {currentUser?.user_id === selectedEvent?.user_id && (
+            <button
+              onClick={() => handleDeleteEvent(selectedEvent.event_id)}
+              style={{
+                position: 'absolute',
+                bottom: '10px',
+                right: '10px',
+                background: 'linear-gradient(to right, #f87171, #ef4444)', // light red to red
+                border: 'none',
+                color: '#fff',
+                padding: '8px 14px',
+                borderRadius: '10px',
+                fontWeight: '600',
+                cursor: 'pointer',
+                fontSize: '14px',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                transition: 'background 0.3s ease',
+              }}
+              title="Delete this event"
+            >
+              Delete Event
+            </button>
+          )}
         </div>
       )}
 
@@ -156,28 +182,28 @@ function EventList({ events: initialEvents }) {
                 const rect = e.currentTarget.getBoundingClientRect();
                 const parentRect = parent.getBoundingClientRect();
                 const absoluteLeft = rect.left - parentRect.left + parent.scrollLeft;
-
+              
                 const tooltipWidth = 300;
                 const parentWidth = parent.offsetWidth;
                 let leftPos = absoluteLeft - tooltipWidth / 2;
-
-                // Clamp tooltip within visible range
+              
                 if (leftPos < 8) leftPos = 8;
                 if (leftPos > parentWidth - tooltipWidth - 8) {
                   leftPos = parentWidth - tooltipWidth - 8;
                 }
-
+              
                 setTooltipLeft(`${leftPos}px`);
-                setSelectedEvent((prev) =>
-                  prev?.event_id === event.event_id ? null : event
-                );
-
+                setSelectedEvent((prev) => prev?.event_id === event.event_id ? null : event);
+              
+                console.log('Clicked event:', event);  // ✅ ONLY log event here
+              
                 e.currentTarget.scrollIntoView({
                   behavior: 'smooth',
                   inline: 'center',
                   block: 'nearest',
                 });
               }}
+              
               style={{
                 position: 'absolute',
                 left: `${left}%`,

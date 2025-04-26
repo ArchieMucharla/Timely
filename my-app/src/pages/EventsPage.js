@@ -27,11 +27,11 @@ function EventsPage() {
   const [currentUser, setCurrentUser] = useState(null);
   const [hasLoadedPreferences, setHasLoadedPreferences] = useState(false);
 
-  // Fetch current user + preferred categories
   useEffect(() => {
     fetch(`${BACKEND}/api/users/me`, { credentials: 'include' })
       .then((res) => res.ok ? res.json() : null)
       .then(async (user) => {
+        console.log('Fetched user:', user);  // ← Add this to debug
         setCurrentUser(user);
         if (user) {
           const res = await fetch(`${BACKEND}/api/users/me/categories`, { credentials: 'include' });
@@ -42,6 +42,7 @@ function EventsPage() {
       })
       .catch(console.error);
   }, []);
+  
 
   // Fetch category list
   useEffect(() => {
@@ -129,13 +130,14 @@ function EventsPage() {
           </div>
 
           <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
-            {currentUser ? (
+              {currentUser ? (
               <>
                 <span style={{ fontSize: '14px', color: '#334155' }}>
                   Welcome, <strong>{currentUser.username}</strong>
                 </span>
                 <button onClick={() => navigate('/profile')} style={buttonStyle}>Profile</button>
                 <button onClick={() => navigate('/leaderboard')} style={buttonStyle}>Leaderboard</button>
+                <button onClick={() => navigate('/create_event')} style={buttonStyle}>Create Event</button>
                 <button onClick={handleLogout} style={buttonStyle}>Log Out</button>
                 {currentUser?.role === 'dev' && (
                   <button onClick={() => navigate('/admin')} style={buttonStyle}>Admin</button>
@@ -144,6 +146,7 @@ function EventsPage() {
             ) : (
               <button onClick={() => navigate('/login')} style={buttonStyle}>Log In</button>
             )}
+
           </div>
         </div>
 
@@ -185,7 +188,9 @@ function EventsPage() {
               Select categories or enter a search term to begin.
             </p>
           ) : (
-            <EventList events={events} />
+            currentUser && (
+              <EventList events={events} currentUser={currentUser} />
+            )
           )}
         </div>
       </div>
