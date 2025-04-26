@@ -21,37 +21,25 @@ router.post('/register', async (req, res) => {
 
 // POST /users/login
 router.post('/login', async (req, res) => {
-  try {
-    const { username, password } = req.body;
+  const { username, password } = req.body;
 
-    // Fetch user by username
-    const [rows] = await db.execute('SELECT * FROM Users WHERE username = ?', [username]);
-    if (rows.length === 0) {
-      return res.status(401).json({ error: 'Invalid credentials' });
-    }
-
-    const user = rows[0];
-
-    // Compare passwords
-    const match = await bcrypt.compare(password, user.password);
-    if (!match) {
-      return res.status(401).json({ error: 'Invalid credentials' });
-    }
-
-    // Set session data
-    req.session.userId = user.user_id;
-    req.session.username = user.username;
-    req.session.role = user.role;
-
-    // Update last_active timestamp
-    await db.execute('UPDATE Users SET last_active = NOW() WHERE user_id = ?', [user.user_id]);
-
-    res.json({ message: 'Login successful', userId: user.user_id });
-
-  } catch (err) {
-    console.error('Login error:', err);
-    res.status(500).json({ error: 'Internal server error' });
+  // Fetch user by username
+  const [rows] = await db.execute('SELECT * FROM Users WHERE username = ?', [username]);
+  if (rows.length === 0) {
+    return res.status(401).json({ error: 'Invalid credentials' });
   }
+
+  const user = rows[0];
+
+  req.session.user_id = user.user_id;
+  req.session.username = user.username;
+  req.session.role = user.role;
+
+  // Update last_active timestamp
+  await db.execute('UPDATE Users SET last_active = NOW() WHERE user_id = ?', [user.user_id]);
+  
+
+  res.json({ message: 'Login successful', user_id: user.user_id });
 });
 
 // POST /users/logout
