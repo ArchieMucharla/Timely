@@ -65,15 +65,34 @@ router.post('/logout', (req, res) => {
 
 // Middleware for protected routes
 function isAuthenticated(req, res, next) {
-  if (req.session.userId) return next();
+  if (req.session.user_id) {
+    req.user = req.session.user_id;
+    return next();
+  }
   res.status(401).json({ error: 'Unauthorized' });
 }
 
 // GET /users/me/events (protected)
 router.get('/me/events', isAuthenticated, async (req, res) => {
-  const [events] = await db.execute(
+  /*const [events] = await db.execute(
     'SELECT * FROM Events WHERE user_id = ?',
-    [req.session.userId]
+    [req.session.user_id]
+  );*/
+  const [events] = await db.execute(
+    `SELECT 
+      e.event_id,
+      e.user_id,
+      e.event_name,
+      e.event_date,
+      e.event_description,
+      e.source_id,
+      GROUP_CONCAT(c.category_name SEPARATOR ', ') AS categories
+    FROM Events e
+    JOIN  EventCategory ec ON e.event_id = ec.event_id
+    JOIN Categories c ON ec.category_id = c.category_id
+    WHERE e.user_id = ?
+    GROUP BY   e.event_id;`, 
+    [req.session.user_id]
   );
   res.json(events);
 });
@@ -81,7 +100,7 @@ router.get('/me/events', isAuthenticated, async (req, res) => {
 // DELETE /users/me (protected)
 router.delete('/me', isAuthenticated, async (req, res) => {
   try {
-    await db.execute('DELETE FROM Users WHERE user_id = ?', [req.session.userId]);
+    await db.execute('DELETE FROM Users WHERE user_id = ?', [req.session.user_id]);
     req.session.destroy(() => res.clearCookie('user_sid'));
     res.json({ message: 'User deleted' });
   } catch (err) {
@@ -91,11 +110,11 @@ router.delete('/me', isAuthenticated, async (req, res) => {
 
 // GET /users/me — check current session
 router.get('/me', (req, res) => {
-  if (!req.session.userId) {
+  if (!req.session.user_id) {
     return res.status(401).json({ error: 'Not logged in' });
   }
   res.json({
-    userId: req.session.userId,
+    user_id: req.session.user_id,
     username: req.session.username,
     role: req.session.role,
   });
@@ -133,12 +152,12 @@ router.get('/leaderboard', async (req, res) => {
 
 // GET /users/me/categories — get preferred category IDs
 router.get('/me/categories', async (req, res) => {
-  if (!req.session.userId) return res.status(401).json({ error: 'Not logged in' });
+  if (!req.session.user_id) return res.status(401).json({ error: 'Not logged in' });
 
   try {
     const [rows] = await db.execute(
       'SELECT category_id FROM UserCategoryPreferences WHERE user_id = ?',
-      [req.session.userId]
+      [req.session.user_id]
     );
     const categoryIds = rows.map(r => r.category_id);
     res.json(categoryIds);
@@ -149,7 +168,7 @@ router.get('/me/categories', async (req, res) => {
 });
 // POST /users/me/categories — save preferred category IDs
 router.post('/me/categories', async (req, res) => {
-  if (!req.session.userId) return res.status(401).json({ error: 'Not logged in' });
+  if (!req.session.user_id) return res.status(401).json({ error: 'Not logged in' });
 
   const { category_ids } = req.body;
   if (!Array.isArray(category_ids)) {
@@ -163,12 +182,12 @@ router.post('/me/categories', async (req, res) => {
     // Delete old preferences
     await conn.execute(
       'DELETE FROM UserCategoryPreferences WHERE user_id = ?',
-      [req.session.userId]
+      [req.session.user_id]
     );
 
     // Insert new preferences
     if (category_ids.length > 0) {
-      const values = category_ids.map(id => [req.session.userId, id]);
+      const values = category_ids.map(id => [req.session.user_id, id]);
       await conn.query(
         'INSERT INTO UserCategoryPreferences (user_id, category_id) VALUES ?',
         [values]

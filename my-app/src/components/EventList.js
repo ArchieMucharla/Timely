@@ -1,12 +1,42 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-function EventList({ events }) {
+function EventList({ events: initialEvents, currentUser }) {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [tooltipLeft, setTooltipLeft] = useState(null);
+  const [events, setEvents] = useState(initialEvents);
+
+  useEffect(() => {
+    if (initialEvents) {
+      setEvents(initialEvents); 
+    }
+  }, [initialEvents]);
+
+  useEffect(() => {
+    console.log('Selected Event changed:', selectedEvent);
+    console.log('Current User in EventList:', currentUser);
+  }, [selectedEvent, currentUser]);
+  
 
   if (!Array.isArray(events) || events.length === 0) {
     return <p>No events found.</p>;
   }
+
+  const handleDeleteEvent = async (event_id) => {
+    try {
+      const response = await fetch(`http://localhost:5050/api/events/${event_id}`, { 
+        method: 'DELETE', 
+        credentials: 'include',
+      });
+      if (response.ok) {
+        setEvents((prev) => prev.filter((e) => e.event_id !== event_id));
+        setSelectedEvent(null);
+      } else if (response.status === 403) {
+        alert("You can only delete events you have created!");
+      }
+    } catch (err) {
+      console.err('Error deleteing event (frontend)');
+    }
+  };
 
   const getTime = (date) => new Date(date).getTime();
   const timestamps = events.map((e) => getTime(e.event_date));
@@ -64,6 +94,29 @@ function EventList({ events }) {
           <em style={{ fontSize: '11px', color: '#555' }}>
             Categories: {selectedEvent.categories}
           </em>
+          {currentUser?.user_id === selectedEvent?.user_id && (
+            <button
+              onClick={() => handleDeleteEvent(selectedEvent.event_id)}
+              style={{
+                position: 'absolute',
+                bottom: '10px',
+                right: '10px',
+                background: 'linear-gradient(to right, #f87171, #ef4444)', // light red to red
+                border: 'none',
+                color: '#fff',
+                padding: '8px 14px',
+                borderRadius: '10px',
+                fontWeight: '600',
+                cursor: 'pointer',
+                fontSize: '14px',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                transition: 'background 0.3s ease',
+              }}
+              title="Delete this event"
+            >
+              Delete Event
+            </button>
+          )}
         </div>
       )}
 
@@ -129,28 +182,28 @@ function EventList({ events }) {
                 const rect = e.currentTarget.getBoundingClientRect();
                 const parentRect = parent.getBoundingClientRect();
                 const absoluteLeft = rect.left - parentRect.left + parent.scrollLeft;
-
+              
                 const tooltipWidth = 300;
                 const parentWidth = parent.offsetWidth;
                 let leftPos = absoluteLeft - tooltipWidth / 2;
-
-                // Clamp tooltip within visible range
+              
                 if (leftPos < 8) leftPos = 8;
                 if (leftPos > parentWidth - tooltipWidth - 8) {
                   leftPos = parentWidth - tooltipWidth - 8;
                 }
-
+              
                 setTooltipLeft(`${leftPos}px`);
-                setSelectedEvent((prev) =>
-                  prev?.event_id === event.event_id ? null : event
-                );
-
+                setSelectedEvent((prev) => prev?.event_id === event.event_id ? null : event);
+              
+                console.log('Clicked event:', event);  // ✅ ONLY log event here
+              
                 e.currentTarget.scrollIntoView({
                   behavior: 'smooth',
                   inline: 'center',
                   block: 'nearest',
                 });
               }}
+              
               style={{
                 position: 'absolute',
                 left: `${left}%`,

@@ -1,14 +1,16 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CategoryFilter from '../components/CategoryFilter';
+import EventList from '../components/EventList';
 
 const BACKEND = 'http://localhost:5050';
 
 function UserProfile() {
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
+  const [currentUser, setUser] = useState(null);
   const [categories, setCategories] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
+  const [userEvents, setUserEvents] = useState([]);
 
   useEffect(() => {
     fetch(`${BACKEND}/api/users/me`, { credentials: 'include' })
@@ -24,6 +26,11 @@ function UserProfile() {
     fetch(`${BACKEND}/api/users/me/categories`, { credentials: 'include' })
       .then((res) => res.json())
       .then(setSelectedCategories)
+      .catch(console.error);
+
+    fetch(`${BACKEND}/api/users/me/events`, { credentials: 'include' })
+      .then((res) => res.json())
+      .then(setUserEvents)
       .catch(console.error);
   }, []);
 
@@ -70,12 +77,19 @@ function UserProfile() {
           My Profile
         </h2>
 
-        {user ? (
+        {currentUser ? (
           <>
             <div style={{ marginBottom: '2rem' }}>
               <label style={{ fontWeight: '600', color: '#475569' }}>Username</label>
-              <div style={{ paddingTop: '4px', color: '#1e293b' }}>{user.username}</div>
+              <div style={{ paddingTop: '4px', color: '#1e293b' }}>{currentUser.username}</div>
             </div>
+
+            <div style={{ marginBottom: '2rem' }}>
+              <label style={{ fontWeight: '600', color: '#475569', marginBottom: '0.5rem', display: 'block' }}>
+                Your Events
+              </label>
+              <EventList events={userEvents}  currentUser={currentUser} />
+            </div> 
 
             <div style={{ marginBottom: '1.25rem' }}>
               <label style={{ fontWeight: '600', color: '#475569', marginBottom: '0.5rem', display: 'block' }}>
@@ -122,7 +136,7 @@ function UserProfile() {
             </div>
           </>
         ) : (
-          <p style={{ color: '#64748b' }}>Loading user info...</p>
+          <p style={{ color: '#64748b' }}>Loading currentUser info...</p>
         )}
       </div>
     </div>

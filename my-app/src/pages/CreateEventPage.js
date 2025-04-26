@@ -28,7 +28,7 @@ function CreateEventPage() {
   const BACKEND = 'http://localhost:5050';
   const navigate = useNavigate();
 
-  const [userId, setUserId] = useState(null);
+  const [user_id, setuser_id] = useState(null);
   const [categories, setCategories] = useState([]); // categories by name
   const [selectedCategories, setSelectedCategories] = useState([]); // categories by id
   const [categoryInputs, setCategoryInputs] = useState(false);
@@ -39,7 +39,7 @@ function CreateEventPage() {
       .then((res) => res.ok ? res.json() : null)
       .then((user) => {
         console.log(user);
-        if (user) setUserId(user.userId);
+        if (user) setuser_id(user.user_id);
       });
 
     // Get all categories
@@ -146,7 +146,7 @@ function CreateEventPage() {
 
     // submit as a single payload to sources.js rather than to events.js because need source_id from auto-increment via sources table
     const source_payload = {
-        user_id: userId,
+        user_id: user_id,
         event_name: event.Name,
         event_date: event.Date,
         event_description: event.Description,
