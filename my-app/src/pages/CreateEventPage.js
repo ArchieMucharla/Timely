@@ -1,3 +1,4 @@
+//import { error } from 'console';
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -32,8 +33,8 @@ function CreateEventPage() {
   });
 
   const [newCategory, setNewCategory] = useState({
-    category_name: "",
-    cat_description: ""
+    category_name: '',
+    cat_description: ''
   });
 
   const [user_id, setuser_id] = useState(null);
@@ -62,8 +63,8 @@ function CreateEventPage() {
 
   const handleNewCategory = (e) => {
     const { name, value } = e.target;
-    setNewCategory((prev) => ({
-      ...prev,
+    setNewCategory((prevCategory) => ({
+      ...prevCategory,
       [name]: value
     }));
   };
@@ -74,10 +75,32 @@ function CreateEventPage() {
       alert('Category name is required.');
       return;
     }
-
-    setCategories(prev => [...prev, newCategory]);
-    setSelectedCategories(prev => [...prev, 3]); // Temporary id (for now)
-    setNewCategory({ category_name: "", cat_description: "" });
+    const existingCategoryNames = categories.map(c => c.category_name.toLowerCase());
+    if (existingCategoryNames.includes(newCategory.category_name.toLowerCase())) {
+      alert('This category already exists!');
+      return;
+    }
+    try{
+      const res = await fetch(`${BACKEND}/api/categories`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newCategory)
+      });
+      if (res.ok) {
+        const addedCategory = await res.json();
+        setCategories(prev => [...prev, addedCategory]);  // add it to the categories list
+        setSelectedCategories(prev => [...prev, addedCategory.category_id]);  // add to selected categories
+        setNewCategory({ category_name: '', cat_description: '' }); // clear input
+        setCategoryInputs(false);
+        alert("New category " + newCategory.category_name + " was successfully created!");
+      } else {
+        const errorData = await res.json();
+        alert(`Failed to add new category: ${errorData.message || 'Unknown error'}`);
+      }
+    } catch (err) {
+      console.error('❌ Error while adding new category:', err);
+      alert('An error occurred while adding the new category. Please try again later.');
+    }
   };
 
   const handleCheckboxChange = (e) => {
