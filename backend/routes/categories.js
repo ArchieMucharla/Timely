@@ -1,8 +1,7 @@
 const express = require('express');
 const pool = require('../db');
 const router = express.Router();
-//const db = require('../db'); 
-//const verifyDev = require('../middleware/verifyDev');
+const db = require('../db'); 
 
 // GET /api/categories
 router.get('/', async (req, res) => {
@@ -17,8 +16,28 @@ router.get('/', async (req, res) => {
 
 // POST /categories
 router.post('/', async (req, res) => {
-  // dev-only: create new category (possibly with parent_id)
-  // undone
+  const { category_name, cat_description } = req.body;
+  if (!category_name || !cat_description) {
+    return res.status(400).json({ message: 'Category name and description are required.' });
+  }
+  try {
+    const trimmedName = category_name.trim();
+    const [rows] = await db.query('SELECT category_id FROM Categories WHERE LOWER(category_name) = LOWER(?);', [trimmedName]);
+    if (rows.length > 0) {
+      return res.status(409).json({ error: 'Category already exists' });
+    }
+    const [result] = await db.query('INSERT INTO Categories (category_name, cat_description) VALUES (?, ?);', [category_name, cat_description]);
+    const newCategoryId = result.insertId; 
+    const newCategory = {
+      category_id: newCategoryId, 
+      category_name, 
+      cat_description
+    };
+    return res.status(201).json(newCategory); 
+  } catch (err) {
+    console.error('Error creating category:', err);
+    return res.status(500).json({ message: 'Failed to create category' });
+  }
 });
 
 // DELETE /categories/:id
