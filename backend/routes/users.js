@@ -124,7 +124,7 @@ router.get('/leaderboard', async (req, res) => {
       WHERE u.user_id != 1
       GROUP BY u.user_id, u.username
       HAVING activity_score > 0
-      ORDER BY activity_score DESC
+      ORDER BY events_created DESC
       LIMIT 5;
     `;
 
