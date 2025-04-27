@@ -152,6 +152,22 @@ function LoginPage() {
             </button>
           </div>
         </form>
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '1.5rem' }}>
+          <button
+            onClick={() => navigate('/')}
+            style={{
+              padding: '10px 18px',
+              background: '#e2e8f0',
+              border: 'none',
+              borderRadius: '10px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              color: '#1e293b',
+            }}
+          >
+            Back to Explore
+          </button>
+        </div>
       </div>
     </div>
   );

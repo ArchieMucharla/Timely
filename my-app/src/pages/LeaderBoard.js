@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const BACKEND = 'http://localhost:5050';
 
@@ -15,6 +16,7 @@ const BACKEND = 'http://localhost:5050';
 function LeaderBoard() {
   const [users, setUsers] = useState([]);
   const [categories, setCategories] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetch(`${BACKEND}/api/users/leaderboard`)
@@ -113,6 +115,22 @@ function LeaderBoard() {
           </ul>
         )}
       </div>
+      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '1.5rem' }}>
+          <button
+            onClick={() => navigate('/')}
+            style={{
+              padding: '10px 18px',
+              background: '#e2e8f0',
+              border: 'none',
+              borderRadius: '10px',
+              fontWeight: '600',
+              cursor: 'pointer',
+              color: '#1e293b',
+            }}
+          >
+            Back to Explore
+          </button>
+        </div>
     </div>
   );
 }

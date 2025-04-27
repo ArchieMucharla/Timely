@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-function EventList({ events: initialEvents, currentUser }) {
+function EventList({ events: initialEvents, currentUser = null}) {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [tooltipLeft, setTooltipLeft] = useState(null);
   const [events, setEvents] = useState(initialEvents);
