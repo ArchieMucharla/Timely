@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CategoryFilter from '../components/CategoryFilter';
 import EventList from '../components/EventList';
-import { QRCodeCanvas } from 'qrcode.react';
 
 const BACKEND = 'http://localhost:5050';
 
