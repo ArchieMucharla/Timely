@@ -50,9 +50,11 @@ router.get('/', async (req, res) => {
 
 // POST /api/events
 router.post('/', async (req, res) => {
-    const { user_id, event_name, event_date, event_description, category_ids } = req.body;
+    const { user_id, event_name, event_date, event_description, category_ids, source_id } = req.body;
+
+    console.log('✅ POST /api/events hit');
   
-    if (!user_id || !event_name || !event_date || !category_ids?.length) {
+    if (!user_id || !event_name || !event_date) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
   
@@ -61,8 +63,8 @@ router.post('/', async (req, res) => {
       await conn.beginTransaction();
   
       const [result] = await conn.query(
-        'INSERT INTO Events (user_id, event_name, event_date, event_description) VALUES (?, ?, ?, ?)',
-        [user_id, event_name, event_date, event_description]
+        'INSERT INTO Events (user_id, event_name, event_date, event_description, source_id) VALUES (?, ?, ?, ?, ?)',
+        [user_id, event_name, event_date, event_description, source_id]
       );
   
       const eventId = result.insertId;

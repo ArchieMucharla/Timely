@@ -109,28 +109,48 @@ function CreateEventPage() {
     }
 
     const source_payload = {
-      user_id: user_id,
-      event_name: event.Name,
-      event_date: event.Date,
-      event_description: event.Description,
       source_name: source.Source_Name,
       source_year: source.Source_Year,
-      author: source.Author,
-      category_ids: selectedCategories
+      author: source.Author
     };
 
-    const res = await fetch(`${BACKEND}/api/sources`, {
+    const sourceRes = await fetch(`${BACKEND}/api/sources`, {
       method: 'POST',
       credentials: 'include',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(source_payload)
     });
+    
+    const sourceData = await sourceRes.json();
 
-    if (res.ok) {
-      alert('Event created!');
-      navigate('/');
+    if (sourceRes.ok) {
+      
+      const event_payload = {
+        user_id: user_id,
+        event_name: event.Name,
+        event_date: event.Date,
+        event_description: event.Description,
+        source_id: sourceData.source_id,
+        category_ids: selectedCategories
+      };
+
+      console.log('Event Payload:', event_payload); // Final check
+    
+      const eventRes = await fetch(`${BACKEND}/api/events`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(event_payload)
+      });
+    
+      if (eventRes.ok) {
+        alert('Event created!');
+        navigate('/');
+      } else {
+        alert('Error creating event.');
+      }
     } else {
-      alert('Error creating event.');
+      alert('Error creating source.');
     }
   };
 
