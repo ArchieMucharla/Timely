@@ -92,8 +92,10 @@ function EventsPage() {
     const event = selectedEvent || events[events.length - 1]; // 🔥 new: selected or last event
     const titleElement = document.getElementById('story-title');
     const dateElement = document.getElementById('story-date');
+    const descriptionElement = document.getElementById('story-description');
     if (titleElement) titleElement.innerText = event.event_name;
     if (dateElement) dateElement.innerText = event.event_date.slice(0, 10);
+    if (descriptionElement) descriptionElement.innerText = event.event_description;
   
     setShowStoryPreview(true);
   };  
@@ -252,18 +254,24 @@ function EventsPage() {
                   left: '50%',
                   transform: 'translateX(-50%)',
                   width: '50%',
+                  maxWidth: '300px', 
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'flex-start',
                   textAlign: 'left',
                   padding: '20px',
-                  gap: '20px',
+                  gap: '10px',
+                  wordBreak: 'break-word',
+                  overflowWrap: 'break-word',
                 }}>
-                  <h2 style={{ fontSize: '16px', fontWeight: '700', color: '#1e293b', margin: 0 }}>
+                  <h2 style={{ fontSize: '14px', fontWeight: '700', color: '#1e293b', margin: 0 }}>
                     {(selectedEvent || events[events.length - 1])?.event_name}
                   </h2>
-                  <p style={{ fontSize: '12px', color: '#64748b', margin: 0 }}>
+                  <p style={{ fontSize: '10px', color: '#64748b', margin: 0 }}>
                     {(selectedEvent || events[events.length - 1])?.event_date.slice(0, 10)}
+                  </p>
+                  <p style={{ fontSize: '10px', color: '#64748b', margin: 0 }}>
+                    {(selectedEvent || events[events.length - 1])?.event_description}
                   </p>
                 </div>
               </div>
