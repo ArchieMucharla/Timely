@@ -171,4 +171,42 @@ router.post('/mark-inactive-users', async (req, res) => {
   }
 });
 
+router.post('/delete-inactive-users', async (req, res) => {
+  try {
+    const [users] = await db.query(`
+      SELECT *
+      FROM Users
+      WHERE status = 'pending_deletion'
+      AND last_active < NOW() - INTERVAL 90 DAY
+    `);
+
+    if (users.length > 0) {
+      const usernames = users.map(user => user.username);
+
+      await db.query(`
+        DELETE FROM Users
+        WHERE status = 'pending_deletion'
+        AND last_active < NOW() - INTERVAL 90 DAY
+      `);
+
+      console.log('Users deleted:', usernames);
+
+      res.status(200).json({ 
+        message: `Users deleted.`,
+        users: usernames
+      });
+    } else {
+      res.status(200).json({ 
+        message: 'No users to delete.',
+        users: []
+      });
+    }
+
+  } catch (err) {
+    console.error('Error deleting inactive users:', err);
+    res.status(500).json({ error: 'Failed to delete inactive users.' });
+  }
+});
+
+
 module.exports = router;
