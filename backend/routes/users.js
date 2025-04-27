@@ -116,7 +116,7 @@ router.get('/leaderboard', async (req, res) => {
         u.user_id,
         u.username,
         COUNT(DISTINCT e.event_id) AS events_created,
-        COUNT(DISTINCT ucp.category_id) AS categories_followed,
+        COUNT(DISTINCT ucp.category_id) AS preferred_categories,
         (COUNT(DISTINCT e.event_id) + COUNT(DISTINCT ucp.category_id)) AS activity_score
       FROM Users u
       LEFT JOIN Events e ON u.user_id = e.user_id
@@ -124,7 +124,7 @@ router.get('/leaderboard', async (req, res) => {
       WHERE u.user_id != 1
       GROUP BY u.user_id, u.username
       HAVING activity_score > 0
-      ORDER BY activity_score DESC
+      ORDER BY events_created DESC
       LIMIT 5;
     `;
 

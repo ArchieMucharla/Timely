@@ -67,7 +67,7 @@ function LeaderBoard() {
                   <strong>#{i + 1}</strong> — <span style={{ fontWeight: 600 }}>{u.username}</span>
                 </div>
                 <div style={{ fontSize: '0.875rem', color: '#475569' }}>
-                  {u.events_created} events · {u.categories_followed} categories
+                  {u.events_created} events
                 </div>
               </li>
             ))}
