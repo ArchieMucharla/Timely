@@ -188,9 +188,7 @@ function EventsPage() {
               Select categories or enter a search term to begin.
             </p>
           ) : (
-            currentUser && (
-              <EventList events={events} currentUser={currentUser} />
-            )
+            <EventList events={events} currentUser={currentUser} />
           )}
         </div>
       </div>
