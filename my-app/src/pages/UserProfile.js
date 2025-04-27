@@ -11,6 +11,8 @@ function UserProfile() {
   const [categories, setCategories] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [userEvents, setUserEvents] = useState([]);
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  
 
   useEffect(() => {
     fetch(`${BACKEND}/api/users/me`, { credentials: 'include' })
@@ -88,7 +90,12 @@ function UserProfile() {
               <label style={{ fontWeight: '600', color: '#475569', marginBottom: '0.5rem', display: 'block' }}>
                 Your Events
               </label>
-              <EventList events={userEvents}  currentUser={currentUser} />
+              <EventList
+                events={userEvents}
+                currentUser={currentUser}
+                onSelect={(event) => setSelectedEvent(event)}
+                selectedEvent={selectedEvent}
+              />
             </div> 
 
             <div style={{ marginBottom: '1.25rem' }}>

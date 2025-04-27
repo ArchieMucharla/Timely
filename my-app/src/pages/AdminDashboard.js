@@ -10,6 +10,9 @@ export default function AdminPage() {
   const [eventSearch, setEventSearch] = useState('');
   const [eventResults, setEventResults] = useState([]);
   const [categoriesByCount, setCategoriesByCount] = useState([]);
+  const [inactiveUsersMessage, setInactiveUsersMessage] = useState('');
+  const [inactiveUsers, setInactiveUsers] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const searchUsers = async () => {
     const res = await fetch(`${BACKEND}/api/admin/users?search=${userSearch}`, { credentials: 'include' });
@@ -28,6 +31,31 @@ export default function AdminPage() {
     const data = await res.json();
     setCategoriesByCount(data);
   };
+
+  const markInactiveUsersForDeletion = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${BACKEND}/api/admin/mark-inactive-users`, {
+        method: 'POST',
+        credentials: 'include', // Include credentials for authentication
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        const usernames = data.users.map(user => user.username);
+        console.log('Users marked for deletion:', usernames);
+        setInactiveUsersMessage(`Users marked for deletion:`);  // Display success message
+        setInactiveUsers(data.users)
+      } else {
+        setInactiveUsersMessage('Error marking inactive users.');
+      }
+    } catch (err) {
+      console.error('Error:', err);
+      setInactiveUsersMessage('Failed to mark inactive users.');
+    }
+    setLoading(false);
+  };
+
 
   const resultCardStyle = {
     backgroundColor: '#f8fafc',
@@ -166,6 +194,34 @@ export default function AdminPage() {
               </div>
             ))}
           </div>
+        </section>
+
+        {/*Mark inactive users for deletion */}
+        <section style={{ marginBottom: '2.5rem' }}>
+          <label style={{ fontWeight: '600', color: '#475569' }}>Mark Users Inactive if No Activity in 90 Days</label>
+          <div style={{ marginTop: '1rem' }}>
+            <button
+              onClick={markInactiveUsersForDeletion}
+              disabled={loading}
+              style={{
+                padding: '10px 16px',
+                background: 'linear-gradient(to right, #6366f1, #3b82f6)',
+                border: 'none',
+                color: '#fff',
+                borderRadius: '8px',
+                fontWeight: '600',
+                cursor: 'pointer',
+              }}
+            >
+              {loading ? 'Marking Inactive Users...' : 'Mark Users for Deletion'}
+            </button>
+          </div>
+          {inactiveUsersMessage && (
+            <div style={{ marginTop: '1rem', color: '#d32f2f' }}>
+              {inactiveUsersMessage}
+              {inactiveUsers}
+            </div>
+          )}
         </section>
 
         {/* Back Button */}
