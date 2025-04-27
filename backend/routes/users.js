@@ -35,11 +35,17 @@ router.post('/login', async (req, res) => {
   req.session.username = user.username;
   req.session.role = user.role;
 
-  // Update last_active timestamp
-  await db.execute('UPDATE Users SET last_active = NOW() WHERE user_id = ?', [user.user_id]);
+  // update last_active timestamp
+  try {
+    await db.query('CALL setUserActive(?)', [req.session.user_id]);
+    console.log('called setUserActive()')
+  } catch (err) {
+    console.log('Failed to update last_active after event creation')
+    console.error('Failed to update last_active after event creation:', err);
+  }
   
 
-  res.json({ message: 'Login successful', user_id: user.user_id });
+  res.status(200).json({ message: 'Login successful', user_id: user.user_id });
 });
 
 // POST /users/logout

@@ -72,6 +72,13 @@ router.post('/', async (req, res) => {
       await conn.query('INSERT INTO EventCategory (event_id, category_id) VALUES ?', [values]);
   
       await conn.commit();
+      try {
+        await conn.query('CALL setUserActive(?)', [req.session.user_id]);
+        console.log('called setUserActive()')
+      } catch (err) {
+        console.log('Failed to update last_active after event creation')
+        console.error('Failed to update last_active after event creation:', err);
+      }
       res.status(201).json({ message: 'Event created', event_id: eventId });
     } catch (err) {
       await conn.rollback();
