@@ -116,7 +116,7 @@ router.get('/leaderboard', async (req, res) => {
         u.user_id,
         u.username,
         COUNT(DISTINCT e.event_id) AS events_created,
-        COUNT(DISTINCT ucp.category_id) AS preferred_categories,
+        COUNT(DISTINCT ucp.category_id) AS categories_followed,
         (COUNT(DISTINCT e.event_id) + COUNT(DISTINCT ucp.category_id)) AS activity_score
       FROM Users u
       LEFT JOIN Events e ON u.user_id = e.user_id
