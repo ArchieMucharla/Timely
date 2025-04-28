@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CategoryFilter from '../components/CategoryFilter';
 import EventList from '../components/EventList';
+import { useTheme } from '../components/ThemeContext';
 
 const BACKEND = 'http://localhost:5050';
 
@@ -20,6 +21,7 @@ const buttonStyle = {
 
 function EventsPage() {
   const navigate = useNavigate();
+  const { theme, toggleTheme } = useTheme();
   const [categories, setCategories] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [searchText, setSearchText] = useState('');
@@ -110,14 +112,14 @@ function EventsPage() {
 
   return (
     <div style={{
-      background: 'linear-gradient(to bottom right, #f8fafc, #e0f2fe)',
+      background: theme === 'dark' ? 'linear-gradient(to bottom right, #0f172a, #1e293b)' : 'linear-gradient(to bottom right, #f8fafc, #e0f2fe)', 
       minHeight: '100vh',
       padding: '3rem 1.5rem',
     }}>
       <div style={{
         maxWidth: '1100px',
         margin: '0 auto',
-        backgroundColor: '#ffffff',
+        backgroundColor: theme === 'dark' ? '#1e293b' : '#ffffff',
         borderRadius: '20px',
         boxShadow: '0 6px 30px rgba(0,0,0,0.1)',
         padding: '3rem 2rem',
@@ -144,32 +146,59 @@ function EventsPage() {
               fontWeight: 'bold',
             }}>🗓️</div>
             <div>
-              <h1 style={{ fontSize: '2.2rem', fontWeight: '800', margin: 0, color: '#1e293b' }}>
-                Explore Events
-              </h1>
-              <p style={{ margin: '0.3rem 0 0', fontSize: '15px', color: '#475569' }}>
+            <h1 style={{ 
+                  fontSize: '2.2rem', 
+                  fontWeight: '800', 
+                  margin: 0, 
+                  color: theme === 'dark' ? '#e2e8f0' : '#1e293b' 
+                }}>
+                  Explore Events
+                </h1>
+              <p style={{ 
+                margin: '0.3rem 0 0', 
+                fontSize: '15px', 
+                color: theme === 'dark' ? '#cbd5e1' : '#475569' 
+              }}>
                 Make timelines with all of your interests!
               </p>
             </div>
           </div>
 
-          <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
-            {currentUser ? (
-              <>
-                <span style={{ fontSize: '14px', color: '#334155' }}>
-                  Welcome, <strong>{currentUser.username}</strong>
-                </span>
-                <button onClick={() => navigate('/profile')} style={buttonStyle}>Profile</button>
-                <button onClick={() => navigate('/leaderboard')} style={buttonStyle}>Leaderboard</button>
-                <button onClick={() => navigate('/create_event')} style={buttonStyle}>Create Event</button>
-                <button onClick={handleLogout} style={buttonStyle}>Log Out</button>
-                {currentUser?.role === 'dev' && (
-                  <button onClick={() => navigate('/admin')} style={buttonStyle}>Admin</button>
-                )}
-              </>
-            ) : (
-              <button onClick={() => navigate('/login')} style={buttonStyle}>Log In</button>
-            )}
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.5rem' }}>
+            <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', alignItems: 'center' }}>
+              {currentUser ? (
+                <>
+                  <span style={{
+                    fontSize: '14px',
+                    color: theme === 'dark' ? '#cbd5e1' : '#334155'
+                  }}>
+                    Welcome, <strong>{currentUser.username}</strong>
+                  </span>
+                  <button onClick={() => navigate('/profile')} style={buttonStyle}>Profile</button>
+                  <button onClick={() => navigate('/leaderboard')} style={buttonStyle}>Leaderboard</button>
+                  <button onClick={() => navigate('/create_event')} style={buttonStyle}>Create Event</button>
+                  <button onClick={handleLogout} style={buttonStyle}>Log Out</button>
+                  {currentUser?.role === 'dev' && (
+                    <button onClick={() => navigate('/admin')} style={buttonStyle}>Admin</button>
+                  )}
+                </>
+              ) : (
+                <button onClick={() => navigate('/login')} style={buttonStyle}>Log In</button>
+              )}
+            </div>
+
+            <div>
+              <button onClick={toggleTheme} style={{
+                ...buttonStyle,
+                background: theme === 'dark'
+                  ? 'linear-gradient(to right,rgb(226, 224, 224),rgb(138, 138, 138))'
+                  : 'linear-gradient(to right,rgb(82, 82, 82),rgb(164, 164, 164))',
+                padding: '8px 16px',
+                fontSize: '18px',
+              }}>
+                {theme === 'dark' ? '☀️' : '🌙'}
+              </button>
+            </div>
           </div>
         </div>
 
@@ -258,6 +287,7 @@ function EventsPage() {
           <button onClick={exportStoryImage} style={buttonStyle}>
             Share to Instagram Story
           </button>
+
         </div>
 
 
@@ -345,6 +375,7 @@ function EventsPage() {
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           visibility: 'hidden',
+          display: 'none'
         }}>
           <div style={{
             position: 'absolute',

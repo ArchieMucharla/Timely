@@ -1,8 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { categoryColorMap } from '../components/CategoryFilter'; // 💬 import color map
+import { useTheme } from '../components/ThemeContext'; // ✨ NEW import!
 
 function EventList({ events: initialEvents, currentUser = null, onSelect, selectedEvent }) {
   const navigate = useNavigate();
+  const { theme } = useTheme(); // ✨ NEW: access current theme!
 
   const [tooltipLeft, setTooltipLeft] = useState(null);
   const [events, setEvents] = useState(initialEvents);
@@ -63,7 +66,8 @@ function EventList({ events: initialEvents, currentUser = null, onSelect, select
             left: tooltipLeft,
             transform: 'translateY(-100%)',
             top: 'calc(50% - 100px)',
-            backgroundColor: '#fff',
+            backgroundColor: theme === 'dark' ? '#222' : '#fff', // ✨ background adapt
+            color: theme === 'dark' ? '#eee' : '#333', // ✨ text adapt
             border: '1px solid #ccc',
             borderRadius: '10px',
             padding: '1rem',
@@ -91,24 +95,24 @@ function EventList({ events: initialEvents, currentUser = null, onSelect, select
             📅 {new Date(selectedEvent.event_date).toLocaleDateString()}
           </p>
           <p style={{ fontSize: '12px' }}>{selectedEvent.event_description}</p>
-          <em style={{ fontSize: '11px', color: '#555' }}>
+          <em style={{ fontSize: '11px', color: theme === 'dark' ? '#aaa' : '#555' }}>
             Categories: {selectedEvent.categories}
           </em>
           {currentUser?.user_id === selectedEvent?.user_id && (
-              <div
+            <div
               style={{
                 position: 'absolute',
-                top: '10px', 
-                right: '10px', 
-                display: 'flex', 
-                gap: '10px', 
-                zIndex: 10, 
+                top: '10px',
+                right: '10px',
+                display: 'flex',
+                gap: '10px',
+                zIndex: 10,
               }}
             >
               <button
                 onClick={() => handleEditEvent(selectedEvent)}
                 style={{
-                  background: 'linear-gradient(to right, #60a5fa, #3b82f6)', // blue gradient
+                  background: 'linear-gradient(to right, #60a5fa, #3b82f6)',
                   border: 'none',
                   color: '#fff',
                   padding: '8px 14px',
@@ -116,7 +120,7 @@ function EventList({ events: initialEvents, currentUser = null, onSelect, select
                   fontWeight: '600',
                   cursor: 'pointer',
                   fontSize: '14px',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.1)', 
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
                 }}
                 title="Edit this event"
               >
@@ -164,7 +168,7 @@ function EventList({ events: initialEvents, currentUser = null, onSelect, select
             left: 0,
             right: 0,
             height: '4px',
-            backgroundColor: '#ddd',
+            backgroundColor: theme === 'dark' ? '#444' : '#ddd', // ✨ adapt timeline line
             zIndex: 1,
           }}
         />
@@ -181,7 +185,7 @@ function EventList({ events: initialEvents, currentUser = null, onSelect, select
                 transform: 'translateX(-50%)',
                 top: 'calc(50% + 16px)',
                 fontSize: '12px',
-                color: '#777',
+                color: theme === 'dark' ? '#aaa' : '#777', // ✨ adapt year text
                 zIndex: 2,
                 textAlign: 'center',
               }}
@@ -196,6 +200,11 @@ function EventList({ events: initialEvents, currentUser = null, onSelect, select
         {events.map((event) => {
           const left = ((getTime(event.event_date) - minDate) / range) * 100;
           const isSelected = selectedEvent?.event_id === event.event_id;
+
+          const categoryName = Array.isArray(event.categories)
+            ? event.categories[0]
+            : event.categories;
+          const color = categoryColorMap[categoryName] || "#ccc";
 
           return (
             <div
@@ -230,14 +239,17 @@ function EventList({ events: initialEvents, currentUser = null, onSelect, select
                 position: 'absolute',
                 left: `${left}%`,
                 top: isSelected ? 'calc(50% - 9px)' : 'calc(50% - 6px)',
-                width: isSelected ? '24px' : '18px',
-                height: isSelected ? '24px' : '18px',
-                backgroundColor: isSelected ? 'orange' : '#8884d8',
+                width: isSelected ? '16px' : '12px',
+                height: isSelected ? '16px' : '12px',
+                backgroundColor: isSelected ? 'orange' : color,
                 borderRadius: '50%',
                 cursor: 'pointer',
                 zIndex: isSelected ? 999 : 3,
                 transform: 'translateX(-50%)',
                 transition: 'transform 0.2s ease, background-color 0.2s ease',
+                border: theme === 'dark'
+                  ? '1px solid rgba(255, 255, 255, 0.3)' // ✨ lighter outline in dark
+                  : '1px solid rgba(0, 0, 0, 0.2)', // ✨ soft outline in light
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = 'translateX(-50%) scale(3)';
