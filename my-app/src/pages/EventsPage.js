@@ -28,6 +28,8 @@ function EventsPage() {
   const [hasLoadedPreferences, setHasLoadedPreferences] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showStoryPreview, setShowStoryPreview] = useState(false);
+  const [startYear, setStartYear] = useState('');
+  const [endYear, setEndYear] = useState('');
 
   useEffect(() => {
     fetch(`${BACKEND}/api/users/me`, { credentials: 'include' })
@@ -62,12 +64,18 @@ function EventsPage() {
     if (searchText.trim()) {
       params.set('q', searchText.trim());
     }
+    if (startYear) {
+      params.set('startYear', startYear);
+    }
+    if (endYear) {
+      params.set('endYear', endYear);
+    }
 
     fetch(`${BACKEND}/api/events?${params.toString()}`)
       .then((res) => res.json())
       .then(setEvents)
       .catch(console.error);
-  }, [selectedCategories, searchText, hasLoadedPreferences]);
+  }, [selectedCategories, searchText, startYear, endYear, hasLoadedPreferences]);
 
   const toggleCategory = (catId) => {
     setSelectedCategories((prev) =>
@@ -186,6 +194,40 @@ function EventsPage() {
               padding: '14px 18px',
               width: '100%',
               maxWidth: '550px',
+              borderRadius: '12px',
+              border: '1px solid #dbeafe',
+              fontSize: '16px',
+              boxShadow: '0 1px 5px rgba(0,0,0,0.08)',
+            }}
+          />
+        </div>
+
+        <div style={{ marginBottom: '2rem' }}>
+          <input
+            type="number"
+            placeholder="Start Year"
+            value={startYear}
+            onChange={(e) => setStartYear(e.target.value)}
+            style={{
+              padding: '14px 18px',
+              width: '100%',
+              maxWidth: '200px',
+              borderRadius: '12px',
+              border: '1px solid #dbeafe',
+              fontSize: '16px',
+              boxShadow: '0 1px 5px rgba(0,0,0,0.08)',
+              marginRight: '1rem'
+            }}
+          />
+          <input
+            type="number"
+            placeholder="End Year"
+            value={endYear}
+            onChange={(e) => setEndYear(e.target.value)}
+            style={{
+              padding: '14px 18px',
+              width: '100%',
+              maxWidth: '200px',
               borderRadius: '12px',
               border: '1px solid #dbeafe',
               fontSize: '16px',
