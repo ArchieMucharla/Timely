@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function EventList({ events: initialEvents, currentUser = null, onSelect, selectedEvent }) {
+  const navigate = useNavigate();
+
   const [tooltipLeft, setTooltipLeft] = useState(null);
   const [events, setEvents] = useState(initialEvents);
 
@@ -32,6 +35,10 @@ function EventList({ events: initialEvents, currentUser = null, onSelect, select
       console.error('Error deleting event (frontend)');
     }
   };
+
+  function handleEditEvent(event) {
+    navigate('/create_event', { state: { event } });
+  }
 
   const getTime = (date) => new Date(date).getTime();
   const timestamps = events.map((e) => getTime(e.event_date));
@@ -88,26 +95,52 @@ function EventList({ events: initialEvents, currentUser = null, onSelect, select
             Categories: {selectedEvent.categories}
           </em>
           {currentUser?.user_id === selectedEvent?.user_id && (
-            <button
-              onClick={() => handleDeleteEvent(selectedEvent.event_id)}
+              <div
               style={{
                 position: 'absolute',
-                bottom: '10px',
-                right: '10px',
-                background: 'linear-gradient(to right, #f87171, #ef4444)',
-                border: 'none',
-                color: '#fff',
-                padding: '8px 14px',
-                borderRadius: '10px',
-                fontWeight: '600',
-                cursor: 'pointer',
-                fontSize: '14px',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                top: '10px', 
+                right: '10px', 
+                display: 'flex', 
+                gap: '10px', 
+                zIndex: 10, 
               }}
-              title="Delete this event"
             >
-              Delete Event
-            </button>
+              <button
+                onClick={() => handleEditEvent(selectedEvent)}
+                style={{
+                  background: 'linear-gradient(to right, #60a5fa, #3b82f6)', // blue gradient
+                  border: 'none',
+                  color: '#fff',
+                  padding: '8px 14px',
+                  borderRadius: '10px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  fontSize: '14px',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.1)', 
+                }}
+                title="Edit this event"
+              >
+                Edit Event
+              </button>
+
+              <button
+                onClick={() => handleDeleteEvent(selectedEvent.event_id)}
+                style={{
+                  background: 'linear-gradient(to right, #f87171, #ef4444)',
+                  border: 'none',
+                  color: '#fff',
+                  padding: '8px 14px',
+                  borderRadius: '10px',
+                  fontWeight: '600',
+                  cursor: 'pointer',
+                  fontSize: '14px',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                }}
+                title="Delete this event"
+              >
+                Delete Event
+              </button>
+            </div>
           )}
         </div>
       )}

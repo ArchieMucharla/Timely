@@ -152,4 +152,37 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+//PUT /api/events/:id for updating events 
+router.put('/:id', async (req, res) => {
+  const { event_name, event_date, event_description, category_ids, source_id } = req.body;
+  const eventId = req.params.id; 
+
+  console.log('✅ PUT /api/events/:id hit to update event', eventId);
+
+  if (!event_name || !event_date) {
+    return res.status(400).json({error: 'Missing required fields'});
+  }
+  const conn = await pool.getConnection(); 
+  try {
+    const [result] = await conn.query(
+      'UPDATE Events SET event_name = ?, event_date = ?, event_description = ?, source_id = ? WHERE event_id = ?',
+      [event_name, event_date, event_description, source_id, eventId]
+    );
+    if (result.affectedRows === 0) {
+      return res.status(404).json({error: 'Event not found'});
+    }
+    await conn.query('DELETE FROM EventCategory WHERE event_id = ?', [eventId]);
+    const values = category_ids.map((catId) => [eventId, catId]);
+    await conn.query('INSERT INTO EventCategory (event_id, category_id) VALUES ?', [values]);
+    await conn.commit(); 
+    res.status(200).json({ message: 'Event updated', event_id: eventId });
+  } catch (err) {
+    await conn.rollback();
+    console.error('❌ Error updating event:', err.message);
+    res.status(500).json({ error: 'Failed to update event' });
+  } finally {
+    conn.release();
+  }
+});
+
 module.exports = router;

@@ -1,6 +1,6 @@
 //import { error } from 'console';
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const BACKEND = 'http://localhost:5050';
 
@@ -42,19 +42,55 @@ function CreateEventPage() {
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [categoryInputs, setCategoryInputs] = useState(false);
 
+  const location = useLocation();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetch(`${BACKEND}/api/users/me`, { credentials: 'include' })
-      .then((res) => res.ok ? res.json() : null)
-      .then((user) => {
-        if (user) setuser_id(user.user_id);
-      });
+  // Check if we're in edit mode by looking at the event passed in state
+  const editingEvent = location.state?.event;
 
-    fetch(`${BACKEND}/api/categories`)
-      .then((res) => res.ok ? res.json() : [])
-      .then(setCategories);
-  }, []);
+  useEffect(() => {
+    async function loadData() {
+      const catRes = await fetch(`${BACKEND}/api/categories`);
+      const fetchedCategories = await catRes.json();
+      setCategories(fetchedCategories);
+  
+      if (editingEvent) {
+        setEvent({
+          Name: editingEvent.event_name,
+          Date: new Date(editingEvent.event_date).toLocaleDateString('en-CA'),
+          Description: editingEvent.event_description,
+          source_id: editingEvent.source_id,
+        });
+  
+        const selectedCategoryIds = fetchedCategories
+          .filter(cat => editingEvent.categories?.includes(cat.category_name))
+          .map(cat => cat.category_id);
+        setSelectedCategories(selectedCategoryIds);
+  
+        if (editingEvent.source_id) {
+          const sourceRes = await fetch(`${BACKEND}/api/sources/${editingEvent.source_id}`);
+          if (sourceRes.ok) {  // <--- check if the fetch was successful
+            const sourceData = await sourceRes.json();
+            if (sourceData) {
+              setEvent(prevEvent => ({
+                ...prevEvent,
+                source_name: sourceData.source_name
+              }));
+            }
+          } else {
+            console.warn(`Source with id ${editingEvent.source_id} not found.`);
+          }
+        }
+      }
+  
+      const userRes = await fetch(`${BACKEND}/api/users/me`, { credentials: 'include' });
+      const user = await userRes.json();
+      if (user) setuser_id(user.user_id);
+    }
+  
+    loadData();
+
+  }, [editingEvent]);
 
   const handleChange = (e) => {
     setEvent((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -105,11 +141,13 @@ function CreateEventPage() {
 
   const handleCheckboxChange = (e) => {
     const value = parseInt(e.target.value);
-    if (e.target.checked) {
-      setSelectedCategories(prev => [...prev, value]);
-    } else {
-      setSelectedCategories(prev => prev.filter(id => id !== value));
-    }
+    setSelectedCategories((prev) => {
+      if (e.target.checked) {
+        return [...prev, value];  // Add category
+      } else {
+        return prev.filter((id) => id !== value);  // Remove category
+      }
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -159,18 +197,28 @@ function CreateEventPage() {
 
       console.log('Event Payload:', event_payload); // Final check
     
-      const eventRes = await fetch(`${BACKEND}/api/events`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(event_payload)
-      });
+      let eventRes; 
+      if (editingEvent) { //editing event 
+        eventRes = await fetch(`${BACKEND}/api/events/${editingEvent.event_id}`, {
+          method: 'PUT',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(event_payload)
+        });
+      } else {
+        eventRes = await fetch(`${BACKEND}/api/events`, { //creating event 
+          method: 'POST',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(event_payload)
+        });
+      }
     
       if (eventRes.ok) {
-        alert('Event created!');
+        alert(editingEvent ? 'Event updated!' : 'Event created!');
         navigate('/');
       } else {
-        alert('Error creating event.');
+        alert('Error saving event.');
       }
     } else {
       alert('Error creating source.');
@@ -193,10 +241,10 @@ function CreateEventPage() {
       }}>
         <div style={{ marginBottom: '2rem' }}>
           <h1 style={{ fontSize: '2.2rem', fontWeight: '800', marginBottom: '0.5rem', color: '#1e293b' }}>
-            📅 Create New Event
+            📅 {editingEvent ? 'Edit Event' : 'Create New Event'}
           </h1>
           <p style={{ fontSize: '15px', color: '#475569' }}>
-            Add a new event to your timeline!
+          {editingEvent ? 'Update the details of your event.' : 'Add a new event to your timeline!'}
           </p>
         </div>
 
@@ -347,7 +395,9 @@ function CreateEventPage() {
           </div>
 
           <div style={{ display: 'flex', gap: '1rem' }}>
-            <button type="submit" style={buttonStyle}>Create Event</button>
+            <button type="submit" style={buttonStyle}>
+              {editingEvent ? 'Update Event' : 'Create Event'}
+            </button>
             <button
               onClick={() => navigate('/')}
               style={{
