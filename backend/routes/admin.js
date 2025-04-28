@@ -38,6 +38,32 @@ router.get('/users', verifyDev, async (req, res) => {
   }
 });
 
+// PUT /admin/users/:id/role - update a user's role
+router.put('/users/:id/role', async (req, res) => {
+  const { id } = req.params;
+  const { role } = req.body;
+
+  if (!role) {
+    return res.status(400).json({ error: 'Role is required' });
+  }
+
+  try {
+    const [result] = await db.execute(
+      'UPDATE Users SET role = ? WHERE user_id = ?',
+      [role, id]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.json({ message: 'Role updated successfully' });
+  } catch (err) {
+    console.error('🔥 SQL error in PUT /admin/users/:id/role:', err);
+    res.status(500).json({ error: 'Failed to update role' });
+  }
+});
+
 // DELETE /admin/users/:id - delete a user by ID
 router.delete('/users/:id', verifyDev, async (req, res) => {
   const userId = req.params.id;

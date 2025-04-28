@@ -82,6 +82,30 @@ export default function AdminPage() {
     setLoading(false);
   };
 
+  const changeUserRole = async (userId, newRole) => {
+    try {
+      const res = await fetch(`${BACKEND}/api/admin/users/${userId}/role`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ role: newRole, id: userId }),
+      });
+
+      if (res.ok) {
+        setUserResults(prevUsers =>
+          prevUsers.map(user =>
+            user.user_id === userId ? { ...user, role: newRole } : user
+          )
+        );
+
+      }
+    } catch (err) {
+      console.error('Failed to change role:', err);
+    }
+  };
+
 
   const resultCardStyle = {
     backgroundColor: '#f8fafc',
@@ -148,7 +172,13 @@ export default function AdminPage() {
           <div style={{ marginTop: '1rem' }}>
             {userResults.map((user) => (
               <div key={user.user_id} style={resultCardStyle}>
-                <strong>{user.username}</strong> (ID: {user.id}, Role: {user.role})
+                <strong>{user.username}</strong> (ID: {user.id}, Role: <select
+                    value={user.role}
+                    onChange={(e) => changeUserRole(user.user_id, e.target.value)}
+                    >
+                    <option value="user">user</option>
+                    <option value="dev">dev</option>
+                  </select>)
               </div>
             ))}
           </div>
