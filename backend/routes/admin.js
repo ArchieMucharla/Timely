@@ -38,6 +38,32 @@ router.get('/users', verifyDev, async (req, res) => {
   }
 });
 
+// PUT /admin/users/:id/role - update a user's role
+router.put('/users/:id/role', async (req, res) => {
+  const { id } = req.params;
+  const { role } = req.body;
+
+  if (!role) {
+    return res.status(400).json({ error: 'Role is required' });
+  }
+
+  try {
+    const [result] = await db.execute(
+      'UPDATE Users SET role = ? WHERE user_id = ?',
+      [role, id]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.json({ message: 'Role updated successfully' });
+  } catch (err) {
+    console.error('🔥 SQL error in PUT /admin/users/:id/role:', err);
+    res.status(500).json({ error: 'Failed to update role' });
+  }
+});
+
 // DELETE /admin/users/:id - delete a user by ID
 router.delete('/users/:id', verifyDev, async (req, res) => {
   const userId = req.params.id;
@@ -128,5 +154,85 @@ router.delete('/delete-category/:id', verifyDev, async (req, res) => {
     res.status(500).json({ error: 'Failed to delete category' });
   }
 });
+
+// Admin route to mark inactive users for deletion
+router.post('/mark-inactive-users', async (req, res) => {
+  try {
+    // Update users to mark them for deletion if they haven't been active for 90 days
+    const result = await db.query(`
+      UPDATE Users
+      SET status = 'pending_deletion'
+      WHERE last_active < NOW() - INTERVAL 90 DAY
+    `);
+
+    console.log(`Users marked for deletion.`);
+
+    // Fetch the usernames of users marked for deletion
+    const [users] = await db.query(`
+      SELECT username
+      FROM Users
+      WHERE status = 'pending_deletion'
+      AND last_active < NOW() - INTERVAL 90 DAY
+    `);
+
+    if (users.length > 0) {
+      const usernames = users.map(user => user.username);
+      console.log('Users marked for deletion:', usernames);
+
+      // Return the list of usernames
+      res.status(200).json({ 
+        message: `Users marked for deletion.`,
+        users: usernames
+      });
+    } else {
+      res.status(200).json({ 
+        message: 'No users were marked for deletion.',
+        users: []
+      });
+    }
+
+  } catch (err) {
+    console.error('Error marking inactive users:', err);
+    res.status(500).json({ error: 'Failed to mark inactive users for deletion.' });
+  }
+});
+
+router.post('/delete-inactive-users', async (req, res) => {
+  try {
+    const [users] = await db.query(`
+      SELECT *
+      FROM Users
+      WHERE status = 'pending_deletion'
+      AND last_active < NOW() - INTERVAL 90 DAY
+    `);
+
+    if (users.length > 0) {
+      const usernames = users.map(user => user.username);
+
+      await db.query(`
+        DELETE FROM Users
+        WHERE status = 'pending_deletion'
+        AND last_active < NOW() - INTERVAL 90 DAY
+      `);
+
+      console.log('Users deleted:', usernames);
+
+      res.status(200).json({ 
+        message: `Users deleted.`,
+        users: usernames
+      });
+    } else {
+      res.status(200).json({ 
+        message: 'No users to delete.',
+        users: []
+      });
+    }
+
+  } catch (err) {
+    console.error('Error deleting inactive users:', err);
+    res.status(500).json({ error: 'Failed to delete inactive users.' });
+  }
+});
+
 
 module.exports = router;

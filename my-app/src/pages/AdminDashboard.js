@@ -10,6 +10,11 @@ export default function AdminPage() {
   const [eventSearch, setEventSearch] = useState('');
   const [eventResults, setEventResults] = useState([]);
   const [categoriesByCount, setCategoriesByCount] = useState([]);
+  const [inactiveUsersMessage, setInactiveUsersMessage] = useState('');
+  const [inactiveUsers, setInactiveUsers] = useState([]);
+  const [deletedUsers, setDeletedUsers] = useState([]);
+  const [deletedUsersMessage, setDeletedUsersMessage] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const searchUsers = async () => {
     const res = await fetch(`${BACKEND}/api/admin/users?search=${userSearch}`, { credentials: 'include' });
@@ -28,6 +33,79 @@ export default function AdminPage() {
     const data = await res.json();
     setCategoriesByCount(data);
   };
+
+  const markInactiveUsersForDeletion = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${BACKEND}/api/admin/mark-inactive-users`, {
+        method: 'POST',
+        credentials: 'include', // Include credentials for authentication
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        const usernames = data.users.map(user => user.username);
+        console.log('Users marked for deletion:', usernames);
+        setInactiveUsersMessage(`Users marked for deletion:`);  // Display success message
+        setInactiveUsers(data.users)
+      } else {
+        setInactiveUsersMessage('Error marking inactive users.');
+      }
+    } catch (err) {
+      console.error('Error:', err);
+      setInactiveUsersMessage('Failed to mark inactive users.');
+    }
+    setLoading(false);
+  };
+
+  const deleteInactiveUsers = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${BACKEND}/api/admin/delete-inactive-users`, {
+        method: 'POST',
+        credentials: 'include', // Include credentials for authentication
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        const usernames = data.users.map(user => user.username);
+        console.log('Deleted users:', usernames);
+        setDeletedUsersMessage(`Deleted Users:`);  // Display success message
+        setDeletedUsers(data.users)
+      } else {
+        setDeletedUsersMessage('Error deleting users.');
+      }
+    } catch (err) {
+      console.error('Error:', err);
+      setDeletedUsersMessage('Failed to delete users.');
+    }
+    setLoading(false);
+  };
+
+  const changeUserRole = async (userId, newRole) => {
+    try {
+      const res = await fetch(`${BACKEND}/api/admin/users/${userId}/role`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ role: newRole, id: userId }),
+      });
+
+      if (res.ok) {
+        setUserResults(prevUsers =>
+          prevUsers.map(user =>
+            user.user_id === userId ? { ...user, role: newRole } : user
+          )
+        );
+
+      }
+    } catch (err) {
+      console.error('Failed to change role:', err);
+    }
+  };
+
 
   const resultCardStyle = {
     backgroundColor: '#f8fafc',
@@ -94,7 +172,13 @@ export default function AdminPage() {
           <div style={{ marginTop: '1rem' }}>
             {userResults.map((user) => (
               <div key={user.user_id} style={resultCardStyle}>
-                <strong>{user.username}</strong> (ID: {user.id}, Role: {user.role})
+                <strong>{user.username}</strong> (ID: {user.id}, Role: <select
+                    value={user.role}
+                    onChange={(e) => changeUserRole(user.user_id, e.target.value)}
+                    >
+                    <option value="user">user</option>
+                    <option value="dev">dev</option>
+                  </select>)
               </div>
             ))}
           </div>
@@ -166,6 +250,62 @@ export default function AdminPage() {
               </div>
             ))}
           </div>
+        </section>
+
+        {/*Mark inactive users for deletion */}
+        <section style={{ marginBottom: '2.5rem' }}>
+          <label style={{ fontWeight: '600', color: '#475569' }}>Delete Inactive Users</label>
+          <div style={{ marginTop: '1rem' }}>
+            <button
+              onClick={markInactiveUsersForDeletion}
+              disabled={loading}
+              style={{
+                padding: '10px 16px',
+                background: 'linear-gradient(to right, #6366f1, #3b82f6)',
+                border: 'none',
+                color: '#fff',
+                borderRadius: '8px',
+                fontWeight: '600',
+                cursor: 'pointer',
+              }}
+            >
+              {loading ? 'Marking Inactive Users...' : 'Mark Users for Deletion'}
+            </button>
+          </div>
+          {inactiveUsersMessage && (
+            <div style={{ marginTop: '1rem', color: '#d32f2f' }}>
+              {inactiveUsersMessage}
+              {inactiveUsers}
+            </div>
+          )}
+        </section>
+
+        {/*Delete inactive users */}
+        <section style={{ marginBottom: '2.5rem' }}>
+          <label style={{ fontWeight: '600', color: '#475569' }}>Mark Users Inactive if No Activity in 90 Days</label>
+          <div style={{ marginTop: '1rem' }}>
+            <button
+              onClick={deleteInactiveUsers}
+              disabled={loading}
+              style={{
+                padding: '10px 16px',
+                background: 'linear-gradient(to right, #6366f1, #3b82f6)',
+                border: 'none',
+                color: '#fff',
+                borderRadius: '8px',
+                fontWeight: '600',
+                cursor: 'pointer',
+              }}
+            >
+              {loading ? 'Marking Inactive Users...' : 'Mark Users for Deletion'}
+            </button>
+          </div>
+          {deletedUsersMessage && (
+            <div style={{ marginTop: '1rem', color: '#d32f2f' }}>
+              {deletedUsersMessage}
+              {deletedUsers}
+            </div>
+          )}
         </section>
 
         {/* Back Button */}

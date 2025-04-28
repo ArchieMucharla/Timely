@@ -26,12 +26,16 @@ function EventsPage() {
   const [events, setEvents] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
   const [hasLoadedPreferences, setHasLoadedPreferences] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [showStoryPreview, setShowStoryPreview] = useState(false);
+  const [startYear, setStartYear] = useState('');
+  const [endYear, setEndYear] = useState('');
 
-  // Fetch current user + preferred categories
   useEffect(() => {
     fetch(`${BACKEND}/api/users/me`, { credentials: 'include' })
       .then((res) => res.ok ? res.json() : null)
       .then(async (user) => {
+        console.log('Fetched user:', user);
         setCurrentUser(user);
         if (user) {
           const res = await fetch(`${BACKEND}/api/users/me/categories`, { credentials: 'include' });
@@ -43,7 +47,6 @@ function EventsPage() {
       .catch(console.error);
   }, []);
 
-  // Fetch category list
   useEffect(() => {
     fetch(`${BACKEND}/api/categories`)
       .then((res) => res.json())
@@ -51,7 +54,6 @@ function EventsPage() {
       .catch(console.error);
   }, []);
 
-  // Fetch filtered events
   useEffect(() => {
     if (!hasLoadedPreferences) return;
 
@@ -62,12 +64,18 @@ function EventsPage() {
     if (searchText.trim()) {
       params.set('q', searchText.trim());
     }
+    if (startYear) {
+      params.set('startYear', startYear);
+    }
+    if (endYear) {
+      params.set('endYear', endYear);
+    }
 
     fetch(`${BACKEND}/api/events?${params.toString()}`)
       .then((res) => res.json())
       .then(setEvents)
       .catch(console.error);
-  }, [selectedCategories, searchText, hasLoadedPreferences]);
+  }, [selectedCategories, searchText, startYear, endYear, hasLoadedPreferences]);
 
   const toggleCategory = (catId) => {
     setSelectedCategories((prev) =>
@@ -82,6 +90,23 @@ function EventsPage() {
     });
     setCurrentUser(null);
   };
+
+  const exportStoryImage = async () => {
+    if (events.length === 0) {
+      alert('No events to share yet!');
+      return;
+    }
+  
+    const event = selectedEvent || events[events.length - 1]; // 🔥 new: selected or last event
+    const titleElement = document.getElementById('story-title');
+    const dateElement = document.getElementById('story-date');
+    const descriptionElement = document.getElementById('story-description');
+    if (titleElement) titleElement.innerText = event.event_name;
+    if (dateElement) dateElement.innerText = event.event_date.slice(0, 10);
+    if (descriptionElement) descriptionElement.innerText = event.event_description;
+  
+    setShowStoryPreview(true);
+  };  
 
   return (
     <div style={{
@@ -136,6 +161,7 @@ function EventsPage() {
                 </span>
                 <button onClick={() => navigate('/profile')} style={buttonStyle}>Profile</button>
                 <button onClick={() => navigate('/leaderboard')} style={buttonStyle}>Leaderboard</button>
+                <button onClick={() => navigate('/create_event')} style={buttonStyle}>Create Event</button>
                 <button onClick={handleLogout} style={buttonStyle}>Log Out</button>
                 {currentUser?.role === 'dev' && (
                   <button onClick={() => navigate('/admin')} style={buttonStyle}>Admin</button>
@@ -176,6 +202,40 @@ function EventsPage() {
           />
         </div>
 
+        <div style={{ marginBottom: '2rem' }}>
+          <input
+            type="number"
+            placeholder="Start Year"
+            value={startYear}
+            onChange={(e) => setStartYear(e.target.value)}
+            style={{
+              padding: '14px 18px',
+              width: '100%',
+              maxWidth: '200px',
+              borderRadius: '12px',
+              border: '1px solid #dbeafe',
+              fontSize: '16px',
+              boxShadow: '0 1px 5px rgba(0,0,0,0.08)',
+              marginRight: '1rem'
+            }}
+          />
+          <input
+            type="number"
+            placeholder="End Year"
+            value={endYear}
+            onChange={(e) => setEndYear(e.target.value)}
+            style={{
+              padding: '14px 18px',
+              width: '100%',
+              maxWidth: '200px',
+              borderRadius: '12px',
+              border: '1px solid #dbeafe',
+              fontSize: '16px',
+              boxShadow: '0 1px 5px rgba(0,0,0,0.08)',
+            }}
+          />
+        </div>
+
         <div>
           <h3 style={{ fontWeight: '700', fontSize: '1.25rem', marginBottom: '1.25rem', color: '#1e293b' }}>
             Events
@@ -185,9 +245,140 @@ function EventsPage() {
               Select categories or enter a search term to begin.
             </p>
           ) : (
-            <EventList events={events} />
+            <EventList
+              events={events}
+              currentUser={currentUser}
+              onSelect={(event) => setSelectedEvent(event)}
+              selectedEvent={selectedEvent}
+            />
           )}
         </div>
+
+        <div style={{ marginTop: '2rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <button onClick={exportStoryImage} style={buttonStyle}>
+            Share to Instagram Story
+          </button>
+        </div>
+
+
+        {showStoryPreview && (
+          <div style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 9999,
+          }}>
+            <div style={{
+              position: 'relative',
+              width: '360px',
+              height: '640px',
+              backgroundColor: '#fff',
+              borderRadius: '20px',
+              overflow: 'hidden',
+            }}>
+              <div style={{
+                width: '100%',
+                height: '100%',
+                backgroundImage: 'url("/instagramStory.png")',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                position: 'relative',
+              }}>
+                <div style={{
+                  position: 'absolute',
+                  top: '250px',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  width: '50%',
+                  maxWidth: '300px', 
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'flex-start',
+                  textAlign: 'left',
+                  padding: '20px',
+                  gap: '10px',
+                  wordBreak: 'break-word',
+                  overflowWrap: 'break-word',
+                }}>
+                  <h2 style={{ fontSize: '14px', fontWeight: '700', color: '#1e293b', margin: 0 }}>
+                    {(selectedEvent || events[events.length - 1])?.event_name}
+                  </h2>
+                  <p style={{ fontSize: '10px', color: '#64748b', margin: 0 }}>
+                    {(selectedEvent || events[events.length - 1])?.event_date.slice(0, 10)}
+                  </p>
+                  <p style={{ fontSize: '10px', color: '#64748b', margin: 0 }}>
+                    {(selectedEvent || events[events.length - 1])?.event_description}
+                  </p>
+                </div>
+              </div>
+              <button onClick={() => setShowStoryPreview(false)} style={{
+                position: 'absolute',
+                top: '10px',
+                right: '10px',
+                background: '#f87171',
+                border: 'none',
+                color: 'white',
+                padding: '8px 12px',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontWeight: '600',
+              }}>
+                X
+              </button>
+            </div>
+          </div>
+        )}
+
+
+        {/* Hidden Export Area */}
+        <div id="exportArea" style={{
+          width: '1080px',
+          height: '1920px',
+          position: 'relative',
+          backgroundImage: 'url("/instagramStory.png")',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          visibility: 'hidden',
+        }}>
+          <div style={{
+            position: 'absolute',
+            top: '800px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            width: '550px',
+            height: '400px',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'flex-start',
+            alignItems: 'flex-start',
+            textAlign: 'left',
+            padding: '20px',
+            gap: '20px',
+          }}>
+            <h2 id="story-title" style={{
+              fontSize: '48px',
+              fontWeight: '700',
+              color: '#1e293b',
+              margin: 0,
+            }}>
+              Event Title
+            </h2>
+            <p id="story-date" style={{
+              fontSize: '32px',
+              color: '#64748b',
+              margin: 0,
+            }}>
+              Event Date
+            </p>
+          </div>
+        </div>
+
       </div>
     </div>
   );

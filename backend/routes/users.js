@@ -22,20 +22,30 @@ router.post('/register', async (req, res) => {
 // POST /users/login
 router.post('/login', async (req, res) => {
   const { username, password } = req.body;
-  const [rows] = await db.execute('SELECT * FROM Users WHERE username = ?', [username]);
 
-  if (rows.length === 0) return res.status(401).json({ error: 'Invalid credentials' });
+  // Fetch user by username
+  const [rows] = await db.execute('SELECT * FROM Users WHERE username = ?', [username]);
+  if (rows.length === 0) {
+    return res.status(401).json({ error: 'Invalid credentials' });
+  }
 
   const user = rows[0];
-  const match = await bcrypt.compare(password, user.password);
-  if (!match) return res.status(401).json({ error: 'Invalid credentials' });
 
-  req.session.userId = user.user_id;
+  req.session.user_id = user.user_id;
   req.session.username = user.username;
   req.session.role = user.role;
+
+  // update last_active timestamp
+  try {
+    await db.query('CALL setUserActive(?)', [req.session.user_id]);
+    console.log('called setUserActive()')
+  } catch (err) {
+    console.log('Failed to update last_active after event creation')
+    console.error('Failed to update last_active after event creation:', err);
+  }
   
 
-  res.json({ message: 'Login successful', userId: user.user_id });
+  res.status(200).json({ message: 'Login successful', user_id: user.user_id });
 });
 
 // POST /users/logout
@@ -49,15 +59,34 @@ router.post('/logout', (req, res) => {
 
 // Middleware for protected routes
 function isAuthenticated(req, res, next) {
-  if (req.session.userId) return next();
+  if (req.session.user_id) {
+    req.user = req.session.user_id;
+    return next();
+  }
   res.status(401).json({ error: 'Unauthorized' });
 }
 
 // GET /users/me/events (protected)
 router.get('/me/events', isAuthenticated, async (req, res) => {
-  const [events] = await db.execute(
+  /*const [events] = await db.execute(
     'SELECT * FROM Events WHERE user_id = ?',
-    [req.session.userId]
+    [req.session.user_id]
+  );*/
+  const [events] = await db.execute(
+    `SELECT 
+      e.event_id,
+      e.user_id,
+      e.event_name,
+      e.event_date,
+      e.event_description,
+      e.source_id,
+      GROUP_CONCAT(c.category_name SEPARATOR ', ') AS categories
+    FROM Events e
+    JOIN  EventCategory ec ON e.event_id = ec.event_id
+    JOIN Categories c ON ec.category_id = c.category_id
+    WHERE e.user_id = ?
+    GROUP BY   e.event_id;`, 
+    [req.session.user_id]
   );
   res.json(events);
 });
@@ -65,7 +94,7 @@ router.get('/me/events', isAuthenticated, async (req, res) => {
 // DELETE /users/me (protected)
 router.delete('/me', isAuthenticated, async (req, res) => {
   try {
-    await db.execute('DELETE FROM Users WHERE user_id = ?', [req.session.userId]);
+    await db.execute('DELETE FROM Users WHERE user_id = ?', [req.session.user_id]);
     req.session.destroy(() => res.clearCookie('user_sid'));
     res.json({ message: 'User deleted' });
   } catch (err) {
@@ -75,11 +104,11 @@ router.delete('/me', isAuthenticated, async (req, res) => {
 
 // GET /users/me — check current session
 router.get('/me', (req, res) => {
-  if (!req.session.userId) {
+  if (!req.session.user_id) {
     return res.status(401).json({ error: 'Not logged in' });
   }
   res.json({
-    userId: req.session.userId,
+    user_id: req.session.user_id,
     username: req.session.username,
     role: req.session.role,
   });
@@ -98,10 +127,11 @@ router.get('/leaderboard', async (req, res) => {
       FROM Users u
       LEFT JOIN Events e ON u.user_id = e.user_id
       LEFT JOIN UserCategoryPreferences ucp ON u.user_id = ucp.user_id
+      WHERE u.user_id != 1
       GROUP BY u.user_id, u.username
       HAVING activity_score > 0
-      ORDER BY activity_score DESC
-      LIMIT 15;
+      ORDER BY events_created DESC
+      LIMIT 5;
     `;
 
     console.log("Running leaderboard SQL...");
@@ -117,12 +147,12 @@ router.get('/leaderboard', async (req, res) => {
 
 // GET /users/me/categories — get preferred category IDs
 router.get('/me/categories', async (req, res) => {
-  if (!req.session.userId) return res.status(401).json({ error: 'Not logged in' });
+  if (!req.session.user_id) return res.status(401).json({ error: 'Not logged in' });
 
   try {
     const [rows] = await db.execute(
       'SELECT category_id FROM UserCategoryPreferences WHERE user_id = ?',
-      [req.session.userId]
+      [req.session.user_id]
     );
     const categoryIds = rows.map(r => r.category_id);
     res.json(categoryIds);
@@ -133,7 +163,7 @@ router.get('/me/categories', async (req, res) => {
 });
 // POST /users/me/categories — save preferred category IDs
 router.post('/me/categories', async (req, res) => {
-  if (!req.session.userId) return res.status(401).json({ error: 'Not logged in' });
+  if (!req.session.user_id) return res.status(401).json({ error: 'Not logged in' });
 
   const { category_ids } = req.body;
   if (!Array.isArray(category_ids)) {
@@ -147,12 +177,12 @@ router.post('/me/categories', async (req, res) => {
     // Delete old preferences
     await conn.execute(
       'DELETE FROM UserCategoryPreferences WHERE user_id = ?',
-      [req.session.userId]
+      [req.session.user_id]
     );
 
     // Insert new preferences
     if (category_ids.length > 0) {
-      const values = category_ids.map(id => [req.session.userId, id]);
+      const values = category_ids.map(id => [req.session.user_id, id]);
       await conn.query(
         'INSERT INTO UserCategoryPreferences (user_id, category_id) VALUES ?',
         [values]
@@ -171,5 +201,5 @@ router.post('/me/categories', async (req, res) => {
 });
 
 
-
 module.exports = router;
+module.exports.isAuthenticated = isAuthenticated;
