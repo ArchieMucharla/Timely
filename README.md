@@ -1,5 +1,5 @@
 ## team084-BEAT
-# ⏳ Timely - Timeline Designer ⌛
+# ⏳ Timeline Explorer ⌛
 A modern web application that allows users to create events and visualize then on a timeline relative to other events. Allows personalization features such as:
 
 - Creation of custom events
