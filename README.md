@@ -1,6 +1,6 @@
 ## sp25-cs411-team084-BEAT
 # ⏳ Timely - Timeline Designer ⌛
-A modern web application that allows users to create events and visualize then on a timeline relative to other events. Allows personalization features such as:
+A modern web application that allows users to create events and visualize them on a timeline relative to other events. Allows personalization features such as:
 
 - Creation of custom events
 - Creation of custom categories
@@ -11,3 +11,6 @@ Search historical timelines based on name, category, or date range - even compar
 # Datasets
 - [Wikidata](https://www.wikidata.org/)
 - [Semantic Scholar](https://www.semanticscholar.org/)
+
+# Additional Information
+Additional information about the project can be found in /doc/Project_Report_Stage_4.pdf
