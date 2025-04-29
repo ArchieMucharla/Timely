@@ -1,6 +1,6 @@
-## sp25-cs411-team084-BEAT
-# ⏳ Timely - Timeline Designer ⌛
-A modern web application that allows users to create events and visualize them on a timeline relative to other events. Allows personalization features such as:
+## team084-BEAT
+# ⏳ Timeline Explorer ⌛
+A modern web application that allows users to create events and visualize then on a timeline relative to other events. Allows personalization features such as:
 
 - Creation of custom events
 - Creation of custom categories
