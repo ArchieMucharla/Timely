@@ -19,6 +19,9 @@ const buttonStyle = {
   transition: 'all 0.3s ease',
 };
 
+
+
+
 function EventsPage() {
   const navigate = useNavigate();
   const { theme, toggleTheme } = useTheme();
@@ -33,6 +36,18 @@ function EventsPage() {
   const [startYear, setStartYear] = useState('');
   const [endYear, setEndYear] = useState('');
 
+
+  const handleExploreRandom = () => {
+    if (categories.length === 0) return;
+  
+    const randomCategories = [...categories]
+      .sort(() => 0.5 - Math.random()) // shuffle
+      .slice(0, 3) // pick 3 random categories 
+      .map((cat) => cat.category_id);
+  
+    setSelectedCategories(randomCategories);
+  };
+  
   useEffect(() => {
     fetch(`${BACKEND}/api/users/me`, { credentials: 'include' })
       .then((res) => res.ok ? res.json() : null)
@@ -187,16 +202,33 @@ function EventsPage() {
               )}
             </div>
 
-            <div>
+            <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
               <button onClick={toggleTheme} style={{
-                ...buttonStyle,
-                background: theme === 'dark'
-                  ? 'linear-gradient(to right,rgb(226, 224, 224),rgb(138, 138, 138))'
-                  : 'linear-gradient(to right,rgb(82, 82, 82),rgb(164, 164, 164))',
-                padding: '8px 16px',
+                padding: '10px 16px',
                 fontSize: '18px',
+                fontWeight: '600',
+                borderRadius: '12px',
+                background: 'transparent',
+                border: `2px solid ${theme === 'dark' ? '#fff' : '#000'}`,
+                color: theme === 'dark' ? '#fff' : '#000',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
               }}>
                 {theme === 'dark' ? '☀️' : '🌙'}
+              </button>
+
+              <button onClick={handleExploreRandom} style={{
+                padding: '10px 16px',
+                fontSize: '16px',
+                fontWeight: '600',
+                borderRadius: '12px',
+                background: 'transparent',
+                border: `2px solid ${theme === 'dark' ? '#fff' : '#000'}`,
+                color: theme === 'dark' ? '#fff' : '#000',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+              }}>
+                🎲 Explore Random
               </button>
             </div>
           </div>
