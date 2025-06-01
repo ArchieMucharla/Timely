@@ -1,4 +1,3 @@
-## team084-BEAT
 # ⏳ Timeline Explorer ⌛
 A modern web application that allows users to create events and visualize then on a timeline relative to other events. Allows personalization features such as:
 
@@ -8,7 +7,7 @@ A modern web application that allows users to create events and visualize then o
 
 Search historical timelines based on name, category, or date range - even compare events between two or more categories! Great for anyone interested in history or just curious about human progress. 
 
-# Datasets
+# Datasets used, SQL Backend
 - [Wikidata](https://www.wikidata.org/)
 - [Semantic Scholar](https://www.semanticscholar.org/)
 
