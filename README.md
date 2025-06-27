@@ -12,4 +12,4 @@ Search historical timelines based on name, category, or date range - even compar
 - [Semantic Scholar](https://www.semanticscholar.org/)
 
 # Additional Information
-Additional information about the project can be found in /doc/Project_Report_Stage_4.pdf
+Demo video: https://drive.google.com/file/d/1KAI2rmPHi5vu-8QnGlmEGHizWrli-PFU/view
